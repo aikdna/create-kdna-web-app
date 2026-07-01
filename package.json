@@ -1,0 +1,39 @@
+{
+  "name": "create-kdna-web-app",
+  "version": "0.1.0",
+  "description": "Scaffold a KDNA-integrated web application — Next.js, Express, or bare Node.js, with @aikdna/kdna-web-server, @aikdna/kdna-web-client, and @aikdna/kdna-react pre-configured.",
+  "type": "commonjs",
+  "bin": {
+    "create-kdna-web-app": "bin/create-kdna-web-app.js"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "templates/",
+    "LICENSE",
+    "NOTICE",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node --test tests/**/*.test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {},
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aikdna/create-kdna-web-app.git"
+  },
+  "homepage": "https://github.com/aikdna/create-kdna-web-app",
+  "keywords": [
+    "kdna",
+    "create-kdna-web-app",
+    "scaffold",
+    "nextjs",
+    "express",
+    "judgment-asset",
+    "starter"
+  ]
+}
