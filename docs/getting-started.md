@@ -26,8 +26,8 @@ Open `.env.local`. The only required variable is `KDNA_STORAGE_DIR`:
 KDNA_STORAGE_DIR=/tmp/kdna
 ```
 
-The activation and remote server URLs are optional — leave them
-empty unless you are working with licensed-mode or remote-mode assets.
+`KDNA_ACTIVATION_URL` is optional. Leave it empty unless you are working
+with licensed-mode assets and have a self-hosted activation server.
 
 ---
 

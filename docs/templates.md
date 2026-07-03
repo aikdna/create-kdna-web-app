@@ -17,7 +17,6 @@ most up-to-date template.
 |------|---------|
 | `app/api/kdna/[...route]/route.js` | All KDNA endpoints (catch-all App Router route) |
 | `app/page.jsx` | Demo page: file drop, inspect, load, display |
-| `app/layout.jsx` | Root layout |
 | `.env.local.example` | Environment variable template |
 
 **Start:**
@@ -82,13 +81,9 @@ cd my-app && npm start
 
 | | `nextjs` | `nextjs-pages` | `express` |
 |-|----------|----------------|-----------|
-| Server Actions support | Yes | No | No |
+| KDNA API route included | Yes | Yes | Yes |
 | Edge runtime (Vercel) | No* | No* | No |
-| Works without a bundler | No | No | Yes |
-| React included | Yes | Yes | No** |
+| Browser demo included | React page | React page | Static HTML |
+| React dependency included | Yes | Yes | No |
 
 \* Use `@aikdna/kdna-web-server/cloudflare` for edge deployments.
-
-\*\* React is a separate dependency in the Express template; the demo
-page uses a CDN build for simplicity. Replace with a proper bundler
-for production.
