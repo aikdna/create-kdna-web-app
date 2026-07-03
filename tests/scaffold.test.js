@@ -22,6 +22,7 @@ test('scaffold creates a Next.js app router project without installing', () => {
   const result = scaffold({ projectName: project, template: 'nextjs', packageManager: 'npm', install: false });
 
   assert.equal(result.projectName, 'demo-next');
+  assert.ok(fs.existsSync(path.join(project, 'app/layout.jsx')));
   assert.ok(fs.existsSync(path.join(project, 'app/api/kdna/[...route]/route.js')));
   assert.ok(fs.existsSync(path.join(project, 'app/page.jsx')));
   assert.ok(fs.existsSync(path.join(project, '.env.local.example')));
