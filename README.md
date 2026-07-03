@@ -120,7 +120,7 @@ To get a `.kdna` file for testing:
 
 ```bash
 npm install -g @aikdna/kdna-cli
-curl -LO https://github.com/aikdna/kdna-assets/releases/latest/download/agent-project-context-v0.1.2.kdna
+curl -LO https://github.com/aikdna/kdna-assets/releases/download/agent-project-context-v0.1.2/agent-project-context-v0.1.2.kdna
 ```
 
 ---

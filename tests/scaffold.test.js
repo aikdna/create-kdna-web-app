@@ -128,6 +128,18 @@ test('public package metadata only advertises implemented templates', () => {
   assert.doesNotMatch(pkg.description, /bare Node\.js/);
 });
 
+test('documentation pins example KDNA asset release URLs', () => {
+  const root = path.join(__dirname, '..');
+  for (const relPath of ['README.md', 'docs/getting-started.md']) {
+    const text = fs.readFileSync(path.join(root, relPath), 'utf8');
+    assert.doesNotMatch(text, /releases\/latest\/download\/[^\\s]+\\.kdna/);
+    assert.match(
+      text,
+      /releases\/download\/agent-project-context-v0\.1\.2\/agent-project-context-v0\.1\.2\.kdna/,
+    );
+  }
+});
+
 test('scaffold rejects non-empty target directories', () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'create-kdna-web-app-'));
   fs.writeFileSync(path.join(tmp, 'existing.txt'), 'x');
