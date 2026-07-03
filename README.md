@@ -8,9 +8,10 @@ cd my-app
 npm run dev
 ```
 
-The generated project includes `@aikdna/kdna-web-server`,
+The Next.js templates include `@aikdna/kdna-web-server`,
 `@aikdna/kdna-web-client`, and `@aikdna/kdna-react` pre-configured
-with a working validate → inspect → plan-load → load flow.
+with a validate -> inspect -> plan-load -> load demo. The Express
+template includes the server adapter and a minimal static HTML demo.
 
 [![npm](https://img.shields.io/npm/v/create-kdna-web-app)](https://www.npmjs.com/package/create-kdna-web-app)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
@@ -50,7 +51,7 @@ npx create-kdna-web-app my-app --template nextjs-pages
 
 ### `nextjs` (default)
 
-- Next.js 14+ with App Router
+- Next.js 16+ with App Router
 - `app/api/kdna/[...route]/route.js` — all KDNA endpoints mounted
 - `app/page.jsx` — full demo: file drop, inspect, load, display
 - `.env.local.example` for local configuration
@@ -70,20 +71,17 @@ npx create-kdna-web-app my-app --template nextjs-pages
 
 ---
 
-## What each generated project includes
+## Template dependencies
 
-### Dependencies
+| Template | KDNA packages |
+|----------|---------------|
+| `nextjs` | `@aikdna/kdna-core`, `@aikdna/kdna-web-server`, `@aikdna/kdna-web-client`, `@aikdna/kdna-react` |
+| `nextjs-pages` | `@aikdna/kdna-core`, `@aikdna/kdna-web-server`, `@aikdna/kdna-web-client`, `@aikdna/kdna-react` |
+| `express` | `@aikdna/kdna-core`, `@aikdna/kdna-web-server` |
 
-```json
-{
-  "@aikdna/kdna-core": "^0.15.10",
-  "@aikdna/kdna-web-server": "^0.1.0",
-  "@aikdna/kdna-web-client": "^0.1.0",
-  "@aikdna/kdna-react": "^0.1.0"
-}
-```
+## Pre-configured flow
 
-### Pre-configured flow
+The Next.js templates provide the full React flow:
 
 1. User drops a `.kdna` file onto the `<KDNAFileDropzone>`.
 2. The file is uploaded and inspected — metadata appears immediately.
@@ -91,6 +89,9 @@ npx create-kdna-web-app my-app --template nextjs-pages
 4. If the asset is open, it loads automatically.
 5. If the asset requires a password, `<KDNAPasswordUnlockDialog>` appears.
 6. The loaded content is displayed.
+
+The Express template mounts the same `/api/kdna` server endpoints and includes
+a minimal HTML page that uploads, inspects, and loads an open `.kdna` asset.
 
 ### Environment variables
 

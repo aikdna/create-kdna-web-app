@@ -119,6 +119,15 @@ test('template package dependencies use bounded version ranges', () => {
   }
 });
 
+test('public package metadata only advertises implemented templates', () => {
+  const root = path.join(__dirname, '..');
+  const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+  assert.match(pkg.description, /Next\.js App Router/);
+  assert.match(pkg.description, /Next\.js Pages Router/);
+  assert.match(pkg.description, /Express/);
+  assert.doesNotMatch(pkg.description, /bare Node\.js/);
+});
+
 test('scaffold rejects non-empty target directories', () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'create-kdna-web-app-'));
   fs.writeFileSync(path.join(tmp, 'existing.txt'), 'x');
