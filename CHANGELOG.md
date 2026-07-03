@@ -1,0 +1,10 @@
+# Changelog
+
+## 0.1.0 (2026-07-03)
+
+Initial public release of the KDNA web app scaffolder.
+
+- `npx create-kdna-web-app` interactive CLI
+- Templates: Next.js app router, Next.js pages router, Express
+- Generated projects include KDNA integration boilerplate
+- Getting started docs and template checklist
