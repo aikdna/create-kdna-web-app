@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1 (2026-07-03)
+
+- Add missing `app/layout.jsx` to the Next.js app router template
+
+
 ## 0.1.0 (2026-07-03)
 
 Initial public release of the KDNA web app scaffolder.
