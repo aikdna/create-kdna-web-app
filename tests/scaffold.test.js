@@ -148,6 +148,15 @@ test('documentation pins example KDNA asset release URLs', () => {
   }
 });
 
+test('npm package includes public docs and security policy', () => {
+  const root = path.join(__dirname, '..');
+  const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+
+  assert.ok(pkg.files.includes('docs/'));
+  assert.ok(pkg.files.includes('SECURITY.md'));
+  assert.ok(fs.existsSync(path.join(root, 'docs/template-checklist.md')));
+});
+
 test('scaffold rejects non-empty target directories', () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'create-kdna-web-app-'));
   fs.writeFileSync(path.join(tmp, 'existing.txt'), 'x');

@@ -8,11 +8,13 @@
   },
   "files": [
     "bin/",
+    "docs/",
     "src/",
     "templates/",
     "LICENSE",
     "NOTICE",
-    "README.md"
+    "README.md",
+    "SECURITY.md"
   ],
   "scripts": {
     "ci": "npm test && npm pack --dry-run --json",
