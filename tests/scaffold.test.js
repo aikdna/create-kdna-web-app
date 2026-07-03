@@ -99,6 +99,26 @@ test('template smoke scripts cover the generated KDNA server adapter imports', (
   }
 });
 
+test('template package dependencies use bounded version ranges', () => {
+  const root = path.join(__dirname, '..');
+  const expectedRanges = {
+    '@aikdna/kdna-core': '^0.15.10',
+    '@aikdna/kdna-react': '^0.1.0',
+    '@aikdna/kdna-web-client': '^0.1.0',
+    '@aikdna/kdna-web-server': '^0.1.0',
+  };
+
+  for (const template of ['nextjs', 'nextjs-pages', 'express']) {
+    const pkg = JSON.parse(fs.readFileSync(path.join(root, 'templates', template, 'package.json'), 'utf8'));
+    for (const [name, range] of Object.entries(pkg.dependencies || {})) {
+      assert.notEqual(range, 'latest', `${template} should not use latest for ${name}`);
+    }
+    for (const [name, range] of Object.entries(expectedRanges)) {
+      if (pkg.dependencies[name]) assert.equal(pkg.dependencies[name], range);
+    }
+  }
+});
+
 test('scaffold rejects non-empty target directories', () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'create-kdna-web-app-'));
   fs.writeFileSync(path.join(tmp, 'existing.txt'), 'x');

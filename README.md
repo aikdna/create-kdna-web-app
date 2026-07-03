@@ -76,10 +76,10 @@ npx create-kdna-web-app my-app --template nextjs-pages
 
 ```json
 {
-  "@aikdna/kdna-core": "latest",
-  "@aikdna/kdna-web-server": "latest",
-  "@aikdna/kdna-web-client": "latest",
-  "@aikdna/kdna-react": "latest"
+  "@aikdna/kdna-core": "^0.15.10",
+  "@aikdna/kdna-web-server": "^0.1.0",
+  "@aikdna/kdna-web-client": "^0.1.0",
+  "@aikdna/kdna-react": "^0.1.0"
 }
 ```
 
