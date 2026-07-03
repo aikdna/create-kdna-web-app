@@ -1,0 +1,15 @@
+{
+  "name": "{{projectName}}",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node src/server.js",
+    "start": "node src/server.js",
+    "test": "node scripts/smoke.mjs"
+  },
+  "dependencies": {
+    "@aikdna/kdna-core": "^0.15.10",
+    "@aikdna/kdna-web-server": "^0.1.0",
+    "express": "^5.2.1"
+  }
+}
