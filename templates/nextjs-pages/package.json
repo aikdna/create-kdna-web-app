@@ -1,0 +1,19 @@
+{
+  "name": "{{projectName}}",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@aikdna/kdna-core": "latest",
+    "@aikdna/kdna-react": "latest",
+    "@aikdna/kdna-web-client": "latest",
+    "@aikdna/kdna-web-server": "latest",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  }
+}

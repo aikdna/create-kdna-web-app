@@ -1,0 +1,14 @@
+{
+  "name": "{{projectName}}",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node src/server.js",
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "@aikdna/kdna-core": "latest",
+    "@aikdna/kdna-web-server": "latest",
+    "express": "latest"
+  }
+}

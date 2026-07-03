@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>KDNA Web App</title>
+  </head>
+  <body>
+    <main>
+      <input id="file" type="file" accept=".kdna">
+      <pre id="output">Choose a .kdna file</pre>
+    </main>
+    <script>
+      const file = document.querySelector('#file')
+      const output = document.querySelector('#output')
+      file.addEventListener('change', async () => {
+        const form = new FormData()
+        form.set('file', file.files[0])
+        const inspect = await fetch('/api/kdna/inspect', { method: 'POST', body: form }).then((r) => r.json())
+        const loaded = await fetch('/api/kdna/load', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ fileId: inspect.fileId, profile: 'compact' }),
+        }).then((r) => r.json())
+        output.textContent = loaded.content || JSON.stringify(loaded, null, 2)
+      })
+    </script>
+  </body>
+</html>
