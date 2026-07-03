@@ -61,6 +61,44 @@ test('scaffold creates a Next.js Pages project with a smoke test', () => {
   assert.equal(JSON.parse(fs.readFileSync(path.join(project, 'package.json'), 'utf8')).scripts.test, 'node scripts/smoke.mjs');
 });
 
+test('template smoke scripts cover the generated KDNA server adapter imports', () => {
+  const root = path.join(__dirname, '..');
+  const cases = [
+    {
+      template: 'nextjs',
+      route: 'app/api/kdna/[...route]/route.js',
+      smoke: 'scripts/smoke.mjs',
+      expectedImport: '@aikdna/kdna-web-server/nextjs',
+      expectedExport: 'createNextHandlers',
+    },
+    {
+      template: 'nextjs-pages',
+      route: 'pages/api/kdna/[...route].js',
+      smoke: 'scripts/smoke.mjs',
+      expectedImport: '@aikdna/kdna-web-server/express',
+      expectedExport: 'createKDNARouter',
+    },
+    {
+      template: 'express',
+      route: 'src/server.js',
+      smoke: 'scripts/smoke.mjs',
+      expectedImport: '@aikdna/kdna-web-server/express',
+      expectedExport: 'createKDNARouter',
+    },
+  ];
+
+  for (const entry of cases) {
+    const templateDir = path.join(root, 'templates', entry.template);
+    const routeSource = fs.readFileSync(path.join(templateDir, entry.route), 'utf8');
+    const smokeSource = fs.readFileSync(path.join(templateDir, entry.smoke), 'utf8');
+
+    assert.match(routeSource, new RegExp(entry.expectedImport.replaceAll('/', '\\/')));
+    assert.match(routeSource, new RegExp(`\\b${entry.expectedExport}\\b`));
+    assert.match(smokeSource, new RegExp(entry.expectedImport.replaceAll('/', '\\/')));
+    assert.match(smokeSource, new RegExp(`\\b${entry.expectedExport}\\b`));
+  }
+});
+
 test('scaffold rejects non-empty target directories', () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'create-kdna-web-app-'));
   fs.writeFileSync(path.join(tmp, 'existing.txt'), 'x');
