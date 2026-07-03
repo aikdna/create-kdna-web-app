@@ -5,9 +5,9 @@ This product includes software developed at
 https://github.com/aikdna/create-kdna-web-app
 
 create-kdna-web-app is a project scaffolding CLI for KDNA-integrated
-web applications. Generated projects include @aikdna/kdna-web-server,
-@aikdna/kdna-web-client, and @aikdna/kdna-react pre-configured with
-a working validate → plan-load → load → consume flow.
+web applications. Generated projects include the KDNA packages each
+template imports at runtime, pre-configured with a working validate →
+plan-load → load → consume flow.
 
 See LICENSE for the full Apache 2.0 license text.
 See README.md for usage and template options.

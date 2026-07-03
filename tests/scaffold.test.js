@@ -104,7 +104,6 @@ test('template package dependencies use bounded version ranges', () => {
   const expectedRanges = {
     '@aikdna/kdna-core': '^0.15.10',
     '@aikdna/kdna-react': '^0.1.0',
-    '@aikdna/kdna-web-client': '^0.1.0',
     '@aikdna/kdna-web-server': '^0.1.0',
   };
 
@@ -116,6 +115,15 @@ test('template package dependencies use bounded version ranges', () => {
     for (const [name, range] of Object.entries(expectedRanges)) {
       if (pkg.dependencies[name]) assert.equal(pkg.dependencies[name], range);
     }
+  }
+});
+
+test('Next.js templates do not install unused browser-client package', () => {
+  const root = path.join(__dirname, '..');
+
+  for (const template of ['nextjs', 'nextjs-pages']) {
+    const pkg = JSON.parse(fs.readFileSync(path.join(root, 'templates', template, 'package.json'), 'utf8'));
+    assert.equal(pkg.dependencies['@aikdna/kdna-web-client'], undefined);
   }
 });
 

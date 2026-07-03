@@ -8,10 +8,10 @@ cd my-app
 npm run dev
 ```
 
-The Next.js templates include `@aikdna/kdna-web-server`,
-`@aikdna/kdna-web-client`, and `@aikdna/kdna-react` pre-configured
-with a validate -> inspect -> plan-load -> load demo. The Express
-template includes the server adapter and a minimal static HTML demo.
+The Next.js templates include `@aikdna/kdna-web-server` and
+`@aikdna/kdna-react` pre-configured with a validate -> inspect ->
+plan-load -> load demo. The Express template includes the server adapter
+and a minimal static HTML demo.
 
 [![npm](https://img.shields.io/npm/v/create-kdna-web-app)](https://www.npmjs.com/package/create-kdna-web-app)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
@@ -75,8 +75,8 @@ npx create-kdna-web-app my-app --template nextjs-pages
 
 | Template | KDNA packages |
 |----------|---------------|
-| `nextjs` | `@aikdna/kdna-core`, `@aikdna/kdna-web-server`, `@aikdna/kdna-web-client`, `@aikdna/kdna-react` |
-| `nextjs-pages` | `@aikdna/kdna-core`, `@aikdna/kdna-web-server`, `@aikdna/kdna-web-client`, `@aikdna/kdna-react` |
+| `nextjs` | `@aikdna/kdna-core`, `@aikdna/kdna-web-server`, `@aikdna/kdna-react` |
+| `nextjs-pages` | `@aikdna/kdna-core`, `@aikdna/kdna-web-server`, `@aikdna/kdna-react` |
 | `express` | `@aikdna/kdna-core`, `@aikdna/kdna-web-server` |
 
 ## Pre-configured flow
@@ -131,7 +131,6 @@ curl -LO https://github.com/aikdna/kdna-assets/releases/download/agent-project-c
 |---------|------|
 | [`@aikdna/kdna-core`](https://github.com/aikdna/kdna) | KDNA format and runtime |
 | [`@aikdna/kdna-web-server`](https://github.com/aikdna/kdna-web-server) | Server-side adapter |
-| [`@aikdna/kdna-web-client`](https://github.com/aikdna/kdna-web-client) | Browser utilities |
 | [`@aikdna/kdna-react`](https://github.com/aikdna/kdna-react) | React components and hooks |
 
 ---

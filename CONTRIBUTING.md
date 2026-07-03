@@ -33,8 +33,10 @@ Use `git commit -s` to add it automatically. No CLA is required.
 
 Each template must:
 
-1. Include `@aikdna/kdna-web-server`, `@aikdna/kdna-web-client`, and
-   `@aikdna/kdna-react` as dependencies.
+1. Include only the KDNA packages the template imports at runtime.
+   Next.js templates should include `@aikdna/kdna-web-server` and
+   `@aikdna/kdna-react`; Express templates should include
+   `@aikdna/kdna-web-server`.
 2. Implement the complete validate → plan-load → load → display flow
    out of the box.
 3. Include a `README.md` explaining what the template does and how to
