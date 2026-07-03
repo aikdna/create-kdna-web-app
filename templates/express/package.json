@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "node src/server.js",
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "test": "node scripts/smoke.mjs"
   },
   "dependencies": {
     "@aikdna/kdna-core": "latest",

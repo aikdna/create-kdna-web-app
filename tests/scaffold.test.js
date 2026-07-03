@@ -24,7 +24,10 @@ test('scaffold creates a Next.js app router project without installing', () => {
   assert.equal(result.projectName, 'demo-next');
   assert.ok(fs.existsSync(path.join(project, 'app/api/kdna/[...route]/route.js')));
   assert.ok(fs.existsSync(path.join(project, 'app/page.jsx')));
-  assert.equal(JSON.parse(fs.readFileSync(path.join(project, 'package.json'), 'utf8')).name, 'demo-next');
+  assert.ok(fs.existsSync(path.join(project, 'scripts/smoke.mjs')));
+  const pkg = JSON.parse(fs.readFileSync(path.join(project, 'package.json'), 'utf8'));
+  assert.equal(pkg.name, 'demo-next');
+  assert.equal(pkg.scripts.test, 'node scripts/smoke.mjs');
 });
 
 test('scaffold creates an Express project without installing', () => {
@@ -34,6 +37,19 @@ test('scaffold creates an Express project without installing', () => {
 
   assert.ok(fs.existsSync(path.join(project, 'src/server.js')));
   assert.ok(fs.existsSync(path.join(project, 'public/index.html')));
+  assert.ok(fs.existsSync(path.join(project, 'scripts/smoke.mjs')));
+  assert.equal(JSON.parse(fs.readFileSync(path.join(project, 'package.json'), 'utf8')).scripts.test, 'node scripts/smoke.mjs');
+});
+
+test('scaffold creates a Next.js Pages project with a smoke test', () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'create-kdna-web-app-'));
+  const project = path.join(tmp, 'demo-pages');
+  scaffold({ projectName: project, template: 'nextjs-pages', packageManager: 'npm', install: false });
+
+  assert.ok(fs.existsSync(path.join(project, 'pages/api/kdna/[...route].js')));
+  assert.ok(fs.existsSync(path.join(project, 'pages/index.jsx')));
+  assert.ok(fs.existsSync(path.join(project, 'scripts/smoke.mjs')));
+  assert.equal(JSON.parse(fs.readFileSync(path.join(project, 'package.json'), 'utf8')).scripts.test, 'node scripts/smoke.mjs');
 });
 
 test('scaffold rejects non-empty target directories', () => {

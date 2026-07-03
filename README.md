@@ -111,6 +111,7 @@ KDNA_REMOTE_URL=https://your-remote-server.example.com
 ```bash
 cd my-app
 cp .env.local.example .env.local   # edit as needed
+npm test                           # smoke-test KDNA package imports
 npm run dev
 # Open http://localhost:3000 and drop a .kdna file
 ```
