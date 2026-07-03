@@ -10,7 +10,6 @@ const handler = createKDNARouter({
   basePath: '/api/kdna',
   storageDir: process.env.KDNA_STORAGE_DIR ?? '/tmp/kdna-web',
   activationServerUrl: process.env.KDNA_ACTIVATION_URL,
-  remoteServerUrl: process.env.KDNA_REMOTE_URL,
 })
 
 export default function kdna(req, res) {

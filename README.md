@@ -53,7 +53,7 @@ npx create-kdna-web-app my-app --template nextjs-pages
 - Next.js 14+ with App Router
 - `app/api/kdna/[...route]/route.js` — all KDNA endpoints mounted
 - `app/page.jsx` — full demo: file drop, inspect, load, display
-- Environment variables pre-wired in `.env.local.example`
+- `.env.local.example` for local configuration
 
 ### `nextjs-pages`
 
@@ -66,6 +66,7 @@ npx create-kdna-web-app my-app --template nextjs-pages
 - Express with ESM
 - `src/server.js` — KDNA router mounted at `/api/kdna`
 - `public/index.html` — minimal HTML demo page
+- `.env.example` for local configuration
 
 ---
 
@@ -91,17 +92,14 @@ npx create-kdna-web-app my-app --template nextjs-pages
 5. If the asset requires a password, `<KDNAPasswordUnlockDialog>` appears.
 6. The loaded content is displayed.
 
-### Environment variables (`.env.local.example`)
+### Environment variables
 
 ```bash
-# Required
+# Optional
 KDNA_STORAGE_DIR=/tmp/kdna
 
 # Optional — only needed for licensed-mode assets
 KDNA_ACTIVATION_URL=https://your-activation-server.example.com
-
-# Optional — only needed for remote-mode assets
-KDNA_REMOTE_URL=https://your-remote-server.example.com
 ```
 
 ---
@@ -110,7 +108,8 @@ KDNA_REMOTE_URL=https://your-remote-server.example.com
 
 ```bash
 cd my-app
-cp .env.local.example .env.local   # edit as needed
+cp .env.local.example .env.local   # Next.js templates
+# or: cp .env.example .env         # Express template, if you load env files locally
 npm test                           # smoke-test KDNA package imports
 npm run dev
 # Open http://localhost:3000 and drop a .kdna file

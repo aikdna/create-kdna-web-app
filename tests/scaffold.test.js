@@ -24,7 +24,10 @@ test('scaffold creates a Next.js app router project without installing', () => {
   assert.equal(result.projectName, 'demo-next');
   assert.ok(fs.existsSync(path.join(project, 'app/api/kdna/[...route]/route.js')));
   assert.ok(fs.existsSync(path.join(project, 'app/page.jsx')));
+  assert.ok(fs.existsSync(path.join(project, '.env.local.example')));
   assert.ok(fs.existsSync(path.join(project, 'scripts/smoke.mjs')));
+  assert.doesNotMatch(fs.readFileSync(path.join(project, 'app/api/kdna/[...route]/route.js'), 'utf8'), /remoteServerUrl|KDNA_REMOTE/);
+  assert.doesNotMatch(fs.readFileSync(path.join(project, '.env.local.example'), 'utf8'), /KDNA_REMOTE/);
   const pkg = JSON.parse(fs.readFileSync(path.join(project, 'package.json'), 'utf8'));
   assert.equal(pkg.name, 'demo-next');
   assert.equal(pkg.scripts.test, 'node scripts/smoke.mjs');
@@ -37,7 +40,10 @@ test('scaffold creates an Express project without installing', () => {
 
   assert.ok(fs.existsSync(path.join(project, 'src/server.js')));
   assert.ok(fs.existsSync(path.join(project, 'public/index.html')));
+  assert.ok(fs.existsSync(path.join(project, '.env.example')));
   assert.ok(fs.existsSync(path.join(project, 'scripts/smoke.mjs')));
+  assert.doesNotMatch(fs.readFileSync(path.join(project, 'src/server.js'), 'utf8'), /remoteServerUrl|KDNA_REMOTE/);
+  assert.doesNotMatch(fs.readFileSync(path.join(project, '.env.example'), 'utf8'), /KDNA_REMOTE/);
   assert.equal(JSON.parse(fs.readFileSync(path.join(project, 'package.json'), 'utf8')).scripts.test, 'node scripts/smoke.mjs');
 });
 
@@ -48,7 +54,10 @@ test('scaffold creates a Next.js Pages project with a smoke test', () => {
 
   assert.ok(fs.existsSync(path.join(project, 'pages/api/kdna/[...route].js')));
   assert.ok(fs.existsSync(path.join(project, 'pages/index.jsx')));
+  assert.ok(fs.existsSync(path.join(project, '.env.local.example')));
   assert.ok(fs.existsSync(path.join(project, 'scripts/smoke.mjs')));
+  assert.doesNotMatch(fs.readFileSync(path.join(project, 'pages/api/kdna/[...route].js'), 'utf8'), /remoteServerUrl|KDNA_REMOTE/);
+  assert.doesNotMatch(fs.readFileSync(path.join(project, '.env.local.example'), 'utf8'), /KDNA_REMOTE/);
   assert.equal(JSON.parse(fs.readFileSync(path.join(project, 'package.json'), 'utf8')).scripts.test, 'node scripts/smoke.mjs');
 });
 

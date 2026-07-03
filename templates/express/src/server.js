@@ -7,7 +7,6 @@ const port = Number(process.env.PORT || 3000)
 app.use('/api/kdna', createKDNARouter({
   storageDir: process.env.KDNA_STORAGE_DIR ?? '/tmp/kdna-web',
   activationServerUrl: process.env.KDNA_ACTIVATION_URL,
-  remoteServerUrl: process.env.KDNA_REMOTE_URL,
 }))
 app.use(express.static('public'))
 
