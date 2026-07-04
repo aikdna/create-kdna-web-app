@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2 (2026-07-04)
+
+- Bump template dependencies to published KDNA web package versions (`@aikdna/kdna-core` ^0.15.11, `@aikdna/kdna-react` ^0.1.1, `@aikdna/kdna-web-server` ^0.1.1)
+- Pin PostCSS `^8.5.10` in Next.js (app router + pages) templates via `overrides` / `pnpm.overrides` / `resolutions` to eliminate the npm audit moderate warning
+- Add test asserting the PostCSS pins stay in place
+
 ## 0.1.1 (2026-07-03)
 
 - Add missing `app/layout.jsx` to the Next.js app router template
