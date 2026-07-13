@@ -86,7 +86,7 @@ The Next.js templates provide the full React flow:
 1. User drops a `.kdna` file onto the `<KDNAFileDropzone>`.
 2. The file is uploaded and inspected — metadata appears immediately.
 3. `<KDNALoadPlanGate>` checks whether a password or license is needed.
-4. If the asset is open, it loads automatically.
+4. If the asset is public, it loads automatically.
 5. If the asset requires a password, `<KDNAPasswordUnlockDialog>` appears.
 6. The loaded content is displayed.
 
@@ -120,7 +120,8 @@ To get a `.kdna` file for testing:
 
 ```bash
 npm install -g @aikdna/kdna-cli
-curl -LO https://github.com/aikdna/kdna-assets/releases/download/agent-project-context-v0.1.2/agent-project-context-v0.1.2.kdna
+kdna demo judgment ./demo-judgment
+kdna pack ./demo-judgment ./demo-judgment.kdna
 ```
 
 ---

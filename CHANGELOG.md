@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0 (2026-07-13)
+
+- Scaffold Core 0.15.12, React 0.2.0, and Web Server 0.2.0.
+- Generate the canonical CLI demo instead of downloading a superseded asset.
+- Keep generated loading behind LoadPlan and the server-produced Runtime Capsule.
+
 ## 0.1.2 (2026-07-04)
 
 - Bump template dependencies to published KDNA web package versions (`@aikdna/kdna-core` ^0.15.11, `@aikdna/kdna-react` ^0.1.1, `@aikdna/kdna-web-server` ^0.1.1)

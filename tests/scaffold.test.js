@@ -103,9 +103,9 @@ test('template smoke scripts cover the generated KDNA server adapter imports', (
 test('template package dependencies use bounded version ranges', () => {
   const root = path.join(__dirname, '..');
   const expectedRanges = {
-    '@aikdna/kdna-core': '^0.15.11',
-    '@aikdna/kdna-react': '^0.1.1',
-    '@aikdna/kdna-web-server': '^0.1.1',
+    '@aikdna/kdna-core': '0.15.12',
+    '@aikdna/kdna-react': '0.2.0',
+    '@aikdna/kdna-web-server': '0.2.0',
   };
 
   for (const template of ['nextjs', 'nextjs-pages', 'express']) {
@@ -148,15 +148,12 @@ test('public package metadata only advertises implemented templates', () => {
   assert.doesNotMatch(pkg.description, /bare Node\.js/);
 });
 
-test('documentation pins example KDNA asset release URLs', () => {
+test('documentation generates a current example KDNA asset locally', () => {
   const root = path.join(__dirname, '..');
   for (const relPath of ['README.md', 'docs/getting-started.md']) {
     const text = fs.readFileSync(path.join(root, relPath), 'utf8');
-    assert.doesNotMatch(text, /releases\/latest\/download\/[^\\s]+\\.kdna/);
-    assert.match(
-      text,
-      /releases\/download\/agent-project-context-v0\.1\.2\/agent-project-context-v0\.1\.2\.kdna/,
-    );
+    assert.doesNotMatch(text, /releases\/download\/[^\\s]+\\.kdna/);
+    assert.match(text, /kdna demo judgment/);
   }
 });
 
