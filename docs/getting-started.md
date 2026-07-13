@@ -43,18 +43,18 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Try it with a real .kdna file
 
-Install the KDNA CLI and download an example asset:
+Install the KDNA CLI and generate a current example asset:
 
 ```bash
 npm install -g @aikdna/kdna-cli
-
-curl -LO https://github.com/aikdna/kdna-assets/releases/download/agent-project-context-v0.1.2/agent-project-context-v0.1.2.kdna
+kdna demo judgment ./demo-judgment
+kdna pack ./demo-judgment ./demo-judgment.kdna
 ```
 
 Drop the file onto the page. You should see:
 
 1. The manifest metadata (domain, version, title).
-2. A "Load" button or automatic loading for open assets.
+2. A "Load" button or automatic loading for public assets.
 3. The formatted payload content.
 
 ---

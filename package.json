@@ -1,6 +1,6 @@
 {
   "name": "create-kdna-web-app",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Scaffold a KDNA-integrated web application with Next.js App Router, Next.js Pages Router, or Express templates.",
   "type": "commonjs",
   "bin": {
