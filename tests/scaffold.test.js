@@ -103,9 +103,9 @@ test('template smoke scripts cover the generated KDNA server adapter imports', (
 test('template package dependencies use bounded version ranges', () => {
   const root = path.join(__dirname, '..');
   const expectedRanges = {
-    '@aikdna/kdna-core': '0.15.12',
+    '@aikdna/kdna-core': '0.16.0',
     '@aikdna/kdna-react': '0.2.0',
-    '@aikdna/kdna-web-server': '0.2.0',
+    '@aikdna/kdna-web-server': '0.2.2',
   };
 
   for (const template of ['nextjs', 'nextjs-pages', 'express']) {
