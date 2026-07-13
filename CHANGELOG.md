@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0 (2026-07-13)
+
+- Scaffold KDNA Core 0.16.0, React 0.2.0, and Web Server 0.2.2.
+- Keep generated applications on the official packaged-asset → LoadPlan →
+  Runtime Capsule path with no direct container decoding.
+
 ## 0.2.0 (2026-07-13)
 
 - Scaffold Core 0.15.12, React 0.2.0, and Web Server 0.2.0.
