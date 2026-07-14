@@ -8,8 +8,8 @@
     "test": "node scripts/smoke.mjs"
   },
   "dependencies": {
-    "@aikdna/kdna-core": "0.16.0",
-    "@aikdna/kdna-web-server": "0.2.2",
+    "@aikdna/kdna-core": "0.17.0",
+    "@aikdna/kdna-web-server": "0.2.3",
     "express": "^5.2.1"
   }
 }

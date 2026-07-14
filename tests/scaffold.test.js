@@ -25,6 +25,7 @@ test('scaffold creates a Next.js app router project without installing', () => {
   assert.ok(fs.existsSync(path.join(project, 'app/layout.jsx')));
   assert.ok(fs.existsSync(path.join(project, 'app/api/kdna/[...route]/route.js')));
   assert.ok(fs.existsSync(path.join(project, 'app/page.jsx')));
+  assert.ok(fs.existsSync(path.join(project, 'next.config.mjs')));
   assert.ok(fs.existsSync(path.join(project, '.env.local.example')));
   assert.ok(fs.existsSync(path.join(project, 'scripts/smoke.mjs')));
   assert.doesNotMatch(fs.readFileSync(path.join(project, 'app/api/kdna/[...route]/route.js'), 'utf8'), /remoteServerUrl|KDNA_REMOTE/);
@@ -103,9 +104,9 @@ test('template smoke scripts cover the generated KDNA server adapter imports', (
 test('template package dependencies use bounded version ranges', () => {
   const root = path.join(__dirname, '..');
   const expectedRanges = {
-    '@aikdna/kdna-core': '0.16.0',
+    '@aikdna/kdna-core': '0.17.0',
     '@aikdna/kdna-react': '0.2.0',
-    '@aikdna/kdna-web-server': '0.2.2',
+    '@aikdna/kdna-web-server': '0.2.3',
   };
 
   for (const template of ['nextjs', 'nextjs-pages', 'express']) {
@@ -117,6 +118,15 @@ test('template package dependencies use bounded version ranges', () => {
       if (pkg.dependencies[name]) assert.equal(pkg.dependencies[name], range);
     }
   }
+});
+
+test('App Router keeps KDNA Core outside the Turbopack server bundle', () => {
+  const config = fs.readFileSync(
+    path.join(__dirname, '..', 'templates', 'nextjs', 'next.config.mjs'),
+    'utf8',
+  );
+  assert.match(config, /serverExternalPackages/);
+  assert.match(config, /@aikdna\/kdna-core/);
 });
 
 test('Next.js templates pin patched PostCSS for npm audit hygiene', () => {

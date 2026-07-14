@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.1 (2026-07-14)
+
+- Scaffold KDNA Core 0.17.0 and Web Server 0.2.3.
+- Keep KDNA Core outside the Next.js App Router Turbopack server bundle so a
+  generated application completes a production build and runs through Node.js.
+- Add clean generated-template install, smoke, and production-build release
+  gates for Express, Next.js Pages Router, and Next.js App Router.
+
 ## 0.3.0 (2026-07-13)
 
 - Scaffold KDNA Core 0.16.0, React 0.2.0, and Web Server 0.2.2.

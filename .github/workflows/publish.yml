@@ -26,7 +26,7 @@ jobs:
             echo "::error::Bump package.json and add a CHANGELOG entry together."
             exit 1
           fi
-      - run: npm test
+      - run: npm run ci
       - name: Publish create-kdna-web-app
         run: |
           VERSION=$(node -p "require('./package.json').version")

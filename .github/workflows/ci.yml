@@ -20,3 +20,12 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - run: npm test
+
+  production-templates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+      - run: npm run test:templates
