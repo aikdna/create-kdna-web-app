@@ -20,9 +20,10 @@ audience is.
 3. All commits must be signed off: `git commit -s`
 4. Title format: `area: what changed` (e.g. `template/nextjs: update to App Router default`)
 5. Verify before opening:
-   - `npm test` passes
-   - `node bin/create-kdna-web-app.js test-output --template <name>` succeeds
-   - Generated project starts with `npm run dev` and the health endpoint returns 200
+   - `npm run ci:static` passes
+   - `KDNA_TEST_ASSET=path/to/accepted-asset.kdna npm run test:templates` passes
+   - The generated production project completes inspect -> plan-load -> load
+     in Chromium, not only an import smoke test
 
 ## Developer Certificate of Origin (DCO)
 
@@ -37,7 +38,7 @@ Each template must:
    Next.js templates should include `@aikdna/kdna-web-server` and
    `@aikdna/kdna-react`; Express templates should include
    `@aikdna/kdna-web-server`.
-2. Implement the complete validate → plan-load → load → display flow
+2. Implement the complete inspect → plan-load → load → display flow
    out of the box.
 3. Include a `README.md` explaining what the template does and how to
    configure the activation server URL and storage paths.
@@ -45,3 +46,10 @@ Each template must:
 
 Security constraints from `@aikdna/kdna-web-server/CONTRIBUTING.md`
 apply to all templates without exception.
+
+The browser gate uses Playwright 1.61.1 and Chromium. Install the browser once
+before running the full gate:
+
+```bash
+npx playwright install chromium
+```

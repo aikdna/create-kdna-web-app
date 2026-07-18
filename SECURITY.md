@@ -20,9 +20,10 @@ pre-release and the canonical KDNA protocol/runtime surfaces.
 
 | Component | Supported Versions |
 |-----------|-------------------|
-| KDNA Protocol | Latest tagged release |
-| kdna-cli | Latest minor release |
-| create-kdna-web-app | Latest mainline pre-release |
+| KDNA Core | 0.20.0 |
+| KDNA Web Server | 0.3.0 |
+| KDNA React | 0.3.0 |
+| create-kdna-web-app | 0.4.0 |
 
 Older pre-release versions may receive critical security patches on a
 case-by-case basis.
@@ -32,6 +33,12 @@ case-by-case basis.
 `create-kdna-web-app` scaffolds KDNA-integrated web applications. Generated
 templates must consume the public KDNA package contracts rather than define
 protocol validity, access modes, LoadPlan states, or crypto policy.
+
+The selected `.kdna` file exists briefly in browser memory while it is
+uploaded. Validation, authorization, decryption, profile selection, and
+Runtime Capsule projection happen on the server. Password and license inputs
+may exist briefly in browser form state; generated code must not log, persist,
+or reflect them. Raw license keys go to `/activate`, not `/load`.
 
 For the KDNA Protocol security architecture, see
 [GOVERNANCE.md](https://github.com/aikdna/kdna/blob/main/docs/GOVERNANCE.md)

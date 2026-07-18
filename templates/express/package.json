@@ -7,9 +7,12 @@
     "start": "node src/server.js",
     "test": "node scripts/smoke.mjs"
   },
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
-    "@aikdna/kdna-core": "0.17.0",
-    "@aikdna/kdna-web-server": "0.2.3",
+    "@aikdna/kdna-core": "0.20.0",
+    "@aikdna/kdna-web-server": "0.3.0",
     "express": "^5.2.1"
   }
 }

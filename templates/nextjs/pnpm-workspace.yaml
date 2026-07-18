@@ -1,0 +1,10 @@
+overrides:
+  postcss: 8.5.10
+allowBuilds:
+  cbor-extract: true
+  sharp: true
+minimumReleaseAgeExclude:
+  - '@aikdna/kdna-core@0.20.0'
+  - '@aikdna/kdna-react@0.3.0'
+  - '@aikdna/kdna-web-client@0.2.2'
+  - '@aikdna/kdna-web-server@0.3.0'

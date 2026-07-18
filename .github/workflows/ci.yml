@@ -3,29 +3,80 @@ name: CI
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - 'CHANGELOG.md'
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
-  test:
+  static:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
+      fail-fast: true
       matrix:
-        node: ['18', '20', '22']
+        node: ['20.20.2', '22.23.1', '24.18.0', '26.5.0']
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
         with:
           node-version: ${{ matrix.node }}
-      - run: npm test
+          check-latest: false
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run ci:static
 
   production-templates:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
         with:
-          node-version: '22'
-      - run: npm run test:templates
+          repository: aikdna/kdna-assets
+          ref: 2dd1e2844fd8b8deff8ea0e2620fd946e5c9544f
+          path: public-assets
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          repository: aikdna/kdna
+          ref: 1e77e3e0d486c330fe9f9262b514ef24c859d469
+          path: public-core
+          sparse-checkout: fixtures/test_protected_entry.kdna
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '22.23.1'
+          check-latest: false
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - name: Exercise packed CLI, production servers, and Chromium
+        env:
+          KDNA_TEST_ASSET: public-assets/references/public/laozi-wuwei/laozi-wuwei-0.1.1.kdna
+          KDNA_TEST_PROTECTED_ASSET: public-core/fixtures/test_protected_entry.kdna
+        run: npm run ci
+
+  package-manager:
+    name: package-manager (${{ matrix.label }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - label: pnpm-11.14.0
+            manager: pnpm
+            version: 11.14.0
+            package: pnpm@11.14.0
+          - label: yarn-1.22.22
+            manager: yarn
+            version: 1.22.22
+            package: yarn@1.22.22
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '22.23.1'
+          check-latest: false
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm install --global "${{ matrix.package }}"
+      - run: node scripts/test-package-manager.js "${{ matrix.manager }}" "${{ matrix.version }}"
