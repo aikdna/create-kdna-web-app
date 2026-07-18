@@ -126,7 +126,7 @@ npm run dev
 To get a `.kdna` file for testing:
 
 ```bash
-npm install -g @aikdna/kdna-cli@0.34.0
+npm install -g @aikdna/kdna-cli@0.35.0
 kdna demo judgment ./demo-judgment
 kdna pack ./demo-judgment ./demo-judgment.kdna
 ```

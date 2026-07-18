@@ -276,6 +276,8 @@ test('documentation generates a current example KDNA asset locally', () => {
   for (const relPath of ['README.md', 'docs/getting-started.md']) {
     const text = fs.readFileSync(path.join(root, relPath), 'utf8');
     assert.doesNotMatch(text, /releases\/download\/[^\\s]+\\.kdna/);
+    assert.match(text, /npm install -g @aikdna\/kdna-cli@0\.35\.0/u);
+    assert.doesNotMatch(text, /@aikdna\/kdna-cli@(?!0\.35\.0\b)[^\s`]+/u);
     assert.match(text, /kdna demo judgment/);
   }
 });

@@ -47,7 +47,7 @@ Open [http://localhost:3000](http://localhost:3000).
 Install the KDNA CLI and generate a current example asset:
 
 ```bash
-npm install -g @aikdna/kdna-cli@0.34.0
+npm install -g @aikdna/kdna-cli@0.35.0
 kdna demo judgment ./demo-judgment
 kdna pack ./demo-judgment ./demo-judgment.kdna
 ```
