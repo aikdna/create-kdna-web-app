@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Update the documented KDNA CLI install coordinate to the verified
+  `@aikdna/kdna-cli@0.35.0` release and gate both getting-started examples
+  against stale CLI versions.
+
 ## 0.4.0 (2026-07-18)
 
 - Bind generated apps to KDNA Core 0.20.0, Web Server 0.3.0, React 0.3.0,
