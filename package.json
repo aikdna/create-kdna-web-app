@@ -1,6 +1,6 @@
 {
   "name": "create-kdna-web-app",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Scaffold a KDNA-integrated web application with Next.js App Router, Next.js Pages Router, or Express templates.",
   "type": "commonjs",
   "bin": {
@@ -17,16 +17,24 @@
     "SECURITY.md"
   ],
   "scripts": {
-    "ci": "npm test && npm run test:templates && npm run lint && npm pack --dry-run --json",
-    "test": "node --test tests/scaffold.test.js",
+    "ci": "npm run ci:static && npm run test:templates && npm pack --dry-run --json",
+    "ci:static": "npm test && npm run lint && npm run public:check && npm run naming:check && npm run package:check",
+    "test": "node --test tests/scaffold.test.js tests/release-context.test.cjs tests/dco.test.cjs",
     "test:templates": "node scripts/test-templates.js",
     "lint": "node scripts/lint.js",
+    "public:check": "node scripts/check-public-surface.js",
+    "naming:check": "node scripts/check-naming-integrity.js",
+    "package:check": "node scripts/check-packed-boundary.js",
+    "release:context": "node scripts/verify-release-context.cjs",
     "prepublishOnly": "npm run ci"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "dependencies": {},
+  "devDependencies": {
+    "playwright": "1.61.1"
+  },
   "license": "Apache-2.0",
   "repository": {
     "type": "git",

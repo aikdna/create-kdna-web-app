@@ -7,22 +7,108 @@
   </head>
   <body>
     <main>
+      <h1>KDNA Runtime Capsule viewer</h1>
       <input id="file" type="file" accept=".kdna">
+      <p id="kdna-status">Choose a .kdna file</p>
       <pre id="output">Choose a .kdna file</pre>
+      <form id="kdna-password-form" hidden>
+        <label for="kdna-password">Password</label>
+        <input id="kdna-password" type="password" autocomplete="current-password">
+        <button type="submit">Unlock</button>
+      </form>
     </main>
     <script>
       const file = document.querySelector('#file')
+      const status = document.querySelector('#kdna-status')
       const output = document.querySelector('#output')
+      const passwordForm = document.querySelector('#kdna-password-form')
+      const passwordInput = document.querySelector('#kdna-password')
+      let pendingUnlock = null
+
+      async function readJson(response) {
+        const body = await response.json()
+        if (!response.ok) {
+          throw new Error(body?.error?.message || `KDNA request failed (${response.status})`)
+        }
+        return body
+      }
+
       file.addEventListener('change', async () => {
-        const form = new FormData()
-        form.set('file', file.files[0])
-        const inspect = await fetch('/api/kdna/inspect', { method: 'POST', body: form }).then((r) => r.json())
-        const loaded = await fetch('/api/kdna/load', {
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ fileId: inspect.fileId, profile: 'compact' }),
-        }).then((r) => r.json())
-        output.textContent = loaded.content || JSON.stringify(loaded, null, 2)
+        try {
+          pendingUnlock = null
+          passwordInput.value = ''
+          passwordForm.hidden = true
+          output.id = 'output'
+          status.textContent = 'inspecting'
+          const form = new FormData()
+          form.set('file', file.files[0])
+          const inspect = await readJson(await fetch('/api/kdna/inspect', {
+            method: 'POST',
+            body: form,
+          }))
+
+          status.textContent = 'planning'
+          const plan = await readJson(await fetch('/api/kdna/plan-load', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ fileId: inspect.fileId, context: {} }),
+          }))
+          if (!plan.canProceed) {
+            status.textContent = 'locked'
+            output.textContent = JSON.stringify({ inspect, plan }, null, 2)
+            if (plan.plan?.state === 'needs_password' || plan.plan?.required_action === 'enter_password') {
+              pendingUnlock = { fileId: inspect.fileId, inspect, plan }
+              passwordForm.hidden = false
+            }
+            return
+          }
+
+          status.textContent = 'loading'
+          const loaded = await readJson(await fetch('/api/kdna/load', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ fileId: inspect.fileId, profile: 'compact' }),
+          }))
+          status.textContent = 'loaded'
+          output.id = 'kdna-runtime-capsule'
+          output.textContent = JSON.stringify({ inspect, plan: plan.plan, content: loaded.content }, null, 2)
+        } catch (error) {
+          status.textContent = 'error'
+          output.textContent = error.message
+        }
+      })
+
+      passwordForm.addEventListener('submit', async (event) => {
+        event.preventDefault()
+        if (!pendingUnlock) return
+        const password = passwordInput.value
+        passwordInput.value = ''
+        try {
+          status.textContent = 'loading'
+          const loaded = await readJson(await fetch('/api/kdna/load', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({
+              fileId: pendingUnlock.fileId,
+              profile: 'compact',
+              password,
+            }),
+          }))
+          status.textContent = 'loaded'
+          passwordForm.hidden = true
+          output.id = 'kdna-runtime-capsule'
+          output.textContent = JSON.stringify({
+            inspect: pendingUnlock.inspect,
+            plan: pendingUnlock.plan.plan,
+            content: loaded.content,
+          }, null, 2)
+          pendingUnlock = null
+        } catch (error) {
+          status.textContent = 'locked'
+          output.textContent = error.message
+        } finally {
+          passwordInput.value = ''
+        }
       })
     </script>
   </body>

@@ -8,10 +8,10 @@ cd my-app
 npm run dev
 ```
 
-The Next.js templates include `@aikdna/kdna-web-server` and
-`@aikdna/kdna-react` pre-configured with a validate -> inspect ->
-plan-load -> load demo. The Express template includes the server adapter
-and a minimal static HTML demo.
+Node.js 20 or later is required. Every template binds KDNA Core 0.20.0 and
+Web Server 0.3.0. The Next.js templates additionally bind React 0.3.0.
+Generated apps execute the same inspect -> LoadPlan -> load -> Runtime Capsule
+flow; they do not decode `.kdna` containers directly.
 
 [![npm](https://img.shields.io/npm/v/create-kdna-web-app)](https://www.npmjs.com/package/create-kdna-web-app)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
@@ -31,6 +31,11 @@ npx create-kdna-web-app <project-name> [options]
 | `--template` | `nextjs` | Project template — see [templates](#templates) |
 | `--package-manager` | auto-detected | `npm`, `pnpm`, or `yarn` |
 | `--no-install` | — | Scaffold files without running install |
+
+The release gate verifies npm across all three templates. It also runs the
+packed CLI's real install and Next.js production build with pnpm 11.14.0 and
+Yarn 1.22.22, so the advertised package-manager paths are executable rather
+than parser-only options.
 
 ### Examples
 
@@ -66,7 +71,7 @@ npx create-kdna-web-app my-app --template nextjs-pages
 
 - Express with ESM
 - `src/server.js` — KDNA router mounted at `/api/kdna`
-- `public/index.html` — minimal HTML demo page
+- `public/index.html` — browser demo with the complete LoadPlan flow
 - `.env.example` for local configuration
 
 ---
@@ -75,9 +80,9 @@ npx create-kdna-web-app my-app --template nextjs-pages
 
 | Template | KDNA packages |
 |----------|---------------|
-| `nextjs` | `@aikdna/kdna-core`, `@aikdna/kdna-web-server`, `@aikdna/kdna-react` |
-| `nextjs-pages` | `@aikdna/kdna-core`, `@aikdna/kdna-web-server`, `@aikdna/kdna-react` |
-| `express` | `@aikdna/kdna-core`, `@aikdna/kdna-web-server` |
+| `nextjs` | Core 0.20.0, Web Server 0.3.0, React 0.3.0 |
+| `nextjs-pages` | Core 0.20.0, Web Server 0.3.0, React 0.3.0 |
+| `express` | Core 0.20.0, Web Server 0.3.0 |
 
 ## Pre-configured flow
 
@@ -91,12 +96,14 @@ The Next.js templates provide the full React flow:
 6. The loaded content is displayed.
 
 The Express template mounts the same `/api/kdna` server endpoints and includes
-a minimal HTML page that uploads, inspects, and loads an open `.kdna` asset.
+a static page that explicitly calls inspect, plan-load, and load in order.
+All templates render projected objects with `JSON.stringify`; React objects are
+never passed directly as JSX children.
 
 ### Environment variables
 
 ```bash
-# Optional
+# Optional; the server uses an OS temporary directory when omitted
 KDNA_STORAGE_DIR=/tmp/kdna
 
 # Optional — only needed for licensed-mode assets
@@ -111,7 +118,7 @@ KDNA_ACTIVATION_URL=https://your-activation-server.example.com
 cd my-app
 cp .env.local.example .env.local   # Next.js templates
 # or: cp .env.example .env         # Express template, if you load env files locally
-npm test                           # smoke-test KDNA package imports
+npm test                           # smoke-test exact package entrypoints
 npm run dev
 # Open http://localhost:3000 and drop a .kdna file
 ```
@@ -119,7 +126,7 @@ npm run dev
 To get a `.kdna` file for testing:
 
 ```bash
-npm install -g @aikdna/kdna-cli
+npm install -g @aikdna/kdna-cli@0.34.0
 kdna demo judgment ./demo-judgment
 kdna pack ./demo-judgment ./demo-judgment.kdna
 ```
@@ -133,6 +140,14 @@ kdna pack ./demo-judgment ./demo-judgment.kdna
 | [`@aikdna/kdna-core`](https://github.com/aikdna/kdna) | KDNA format and runtime |
 | [`@aikdna/kdna-web-server`](https://github.com/aikdna/kdna-web-server) | Server-side adapter |
 | [`@aikdna/kdna-react`](https://github.com/aikdna/kdna-react) | React components and hooks |
+
+## What this release verifies
+
+The scaffolder release gate packs the CLI, generates each template from that
+archive into an empty directory, performs a clean install, starts the actual
+production server, and uses Chromium with the accepted public Laozi asset to
+observe successful `/inspect`, `/plan-load`, and `/load` responses. A template
+is not accepted by import-only smoke tests.
 
 ---
 

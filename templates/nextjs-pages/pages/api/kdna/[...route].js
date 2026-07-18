@@ -12,6 +12,13 @@ const handler = createKDNARouter({
   activationServerUrl: process.env.KDNA_ACTIVATION_URL,
 })
 
-export default function kdna(req, res) {
-  return handler(req, res)
+export default async function kdna(req, res) {
+  const incomingUrl = req.url
+  const route = Array.isArray(req.query.route) ? req.query.route : []
+  req.url = `/${route.join('/')}`
+  try {
+    await handler(req, res)
+  } finally {
+    req.url = incomingUrl
+  }
 }

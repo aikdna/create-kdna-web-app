@@ -9,14 +9,14 @@
 **When to use:** You are starting a new Next.js project or want the
 most up-to-date template.
 
-**Framework:** Next.js 14+ (App Router)
+**Framework:** Next.js 16+ (App Router)
 
 **What it includes:**
 
 | File | Purpose |
 |------|---------|
 | `app/api/kdna/[...route]/route.js` | All KDNA endpoints (catch-all App Router route) |
-| `app/page.jsx` | Demo page: file drop, inspect, load, display |
+| `app/page.jsx` | Demo page: file drop, inspect, LoadPlan, load, display |
 | `.env.local.example` | Environment variable template |
 
 **Start:**
@@ -40,7 +40,7 @@ Router project, or prefer the Pages Router.
 | File | Purpose |
 |------|---------|
 | `pages/api/kdna/[...route].js` | All KDNA endpoints |
-| `pages/index.jsx` | Demo page |
+| `pages/index.jsx` | Demo page with the same complete Runtime Capsule flow |
 | `.env.local.example` | Environment variable template |
 
 **Start:**
@@ -64,7 +64,7 @@ Next.js, or are integrating into an existing Express application.
 | File | Purpose |
 |------|---------|
 | `src/server.js` | Express server with KDNA router at `/api/kdna` |
-| `public/index.html` | Minimal HTML demo page |
+| `public/index.html` | Static demo with explicit inspect, plan-load, and load calls |
 | `.env.example` | Environment variable template |
 
 **Start:**
@@ -82,8 +82,9 @@ cd my-app && npm start
 | | `nextjs` | `nextjs-pages` | `express` |
 |-|----------|----------------|-----------|
 | KDNA API route included | Yes | Yes | Yes |
-| Edge runtime (Vercel) | No* | No* | No |
+| Edge runtime | No | No | No |
 | Browser demo included | React page | React page | Static HTML |
 | React dependency included | Yes | Yes | No |
 
-\* Use `@aikdna/kdna-web-server/cloudflare` for edge deployments.
+Web Server 0.3.0 is verified on Node.js runtimes. These templates do not claim
+an Edge or Worker adapter.

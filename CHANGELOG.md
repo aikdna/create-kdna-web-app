@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.4.0 (2026-07-18)
+
+- Bind generated apps to KDNA Core 0.20.0, Web Server 0.3.0, React 0.3.0,
+  and Node.js 20 or later.
+- Make all three browser demos execute inspect -> plan-load -> load and render
+  structured Runtime Capsule context without direct React object children.
+- Replace import-only template acceptance with packed-CLI cold generation,
+  clean installs, actual production servers, HTTP route evidence, and Chromium.
+- Restrict npm publication to exact stable GitHub releases checked out by tag,
+  with immutable CI actions, exact HEAD and main-ancestry checks, unique registry
+  coordinates, CodeQL, and provenance.
+- Ship the complete Apache-2.0 license text and verify it in source and packed
+  package public-surface gates.
+- Verify public and password-protected assets through all three generated
+  production applications, including Express password unlock and accurate
+  post-unlock status in both React templates.
+- Verify packed-CLI installation and production builds with npm, pnpm 11.14.0,
+  and Yarn 1.22.22; enforce DCO on every pull request commit.
+
 ## 0.3.1 (2026-07-14)
 
 - Scaffold KDNA Core 0.17.0 and Web Server 0.2.3.

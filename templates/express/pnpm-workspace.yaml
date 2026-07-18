@@ -1,0 +1,5 @@
+allowBuilds:
+  cbor-extract: true
+minimumReleaseAgeExclude:
+  - '@aikdna/kdna-core@0.20.0'
+  - '@aikdna/kdna-web-server@0.3.0'

@@ -32,15 +32,33 @@ function parseArgs(args) {
     if (arg === '--help' || arg === '-h') {
       options.help = true;
     } else if (arg === '--template') {
-      options.template = args[++index];
+      const value = args[index + 1];
+      if (!value || value.startsWith('-')) {
+        const error = new Error('--template requires a value.');
+        error.exitCode = 1;
+        throw error;
+      }
+      options.template = value;
+      index += 1;
     } else if (arg.startsWith('--template=')) {
       options.template = arg.slice('--template='.length);
     } else if (arg === '--package-manager') {
-      options.packageManager = args[++index];
+      const value = args[index + 1];
+      if (!value || value.startsWith('-')) {
+        const error = new Error('--package-manager requires a value.');
+        error.exitCode = 1;
+        throw error;
+      }
+      options.packageManager = value;
+      index += 1;
     } else if (arg.startsWith('--package-manager=')) {
       options.packageManager = arg.slice('--package-manager='.length);
     } else if (arg === '--no-install') {
       options.install = false;
+    } else if (arg.startsWith('-')) {
+      const error = new Error(`Unknown option: ${arg}\n\n${usage()}`);
+      error.exitCode = 1;
+      throw error;
     } else if (!options.projectName) {
       options.projectName = arg;
     } else {
@@ -57,6 +75,14 @@ function validateOptions(options) {
   if (options.help) return;
   if (!options.projectName) {
     const error = new Error(`Project name is required.\n\n${usage()}`);
+    error.exitCode = 1;
+    throw error;
+  }
+  const packageName = path.basename(path.resolve(options.projectName));
+  if (!/^[a-z0-9][a-z0-9._-]{0,213}$/u.test(packageName)) {
+    const error = new Error(
+      'Project directory name must be a lowercase npm package name (letters, numbers, dots, hyphens, or underscores).',
+    );
     error.exitCode = 1;
     throw error;
   }
