@@ -70,9 +70,10 @@ if (crypto.createHash('sha256').update(license).digest('hex') !== '699a9bdd9d3fb
 }
 const dcoWorkflow = fs.readFileSync(path.join(root, '.github/workflows/dco.yml'), 'utf8');
 const ciWorkflow = fs.readFileSync(path.join(root, '.github/workflows/ci.yml'), 'utf8');
-const publishWorkflow = fs.readFileSync(path.join(root, '.github/workflows/publish.yml'), 'utf8');
+const publishWorkflowPath = path.join(root, '.github/workflows/publish.yml');
 if (!dcoWorkflow.includes('node scripts/check-dco.cjs')) throw new Error('DCO workflow must run the repository verifier.');
-for (const workflow of [ciWorkflow, publishWorkflow]) {
+if (fs.existsSync(publishWorkflowPath)) throw new Error('frozen repository must not contain a publish workflow.');
+for (const workflow of [ciWorkflow]) {
   if (!workflow.includes('1e77e3e0d486c330fe9f9262b514ef24c859d469')) {
     throw new Error('production workflows must pin the exact protected Core fixture commit.');
   }
