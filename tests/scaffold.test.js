@@ -220,11 +220,19 @@ test('public package metadata only advertises implemented templates', () => {
   assert.doesNotMatch(pkg.description, /bare Node\.js/);
 });
 
-test('frozen repository has no automated publish workflow', () => {
-  assert.equal(
-    fs.existsSync(path.join(__dirname, '..', '.github/workflows/publish.yml')),
-    false,
+test('publish workflow proves main ancestry and rejects an existing registry coordinate', () => {
+  const workflow = fs.readFileSync(
+    path.join(__dirname, '..', '.github/workflows/publish.yml'),
+    'utf8',
   );
+  assert.match(workflow, /git fetch --no-tags origin main:refs\/remotes\/origin\/main/u);
+  assert.match(workflow, /npm run release:context/u);
+  assert.match(workflow, /already exists; refusing a duplicate or conflicting release/u);
+  assert.match(workflow, /appeared during release verification; refusing to overwrite or skip/u);
+  assert.match(workflow, /KDNA_TEST_ASSET: \$\{\{ github\.workspace \}\}/u);
+  assert.match(workflow, /KDNA_TEST_PROTECTED_ASSET: \$\{\{ github\.workspace \}\}/u);
+  assert.match(workflow, /1e77e3e0d486c330fe9f9262b514ef24c859d469/u);
+  assert.ok(!workflow.includes(['already published', 'skipping'].join('; ')));
 });
 
 test('production template gate has no local package or single-template override', () => {
