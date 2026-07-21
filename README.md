@@ -2,6 +2,10 @@
 
 **Scaffold a KDNA-integrated web application in one command.**
 
+> **Status:** Experimental published scaffolder at its exact package
+> coordinate. The generated file-drop flow is technical integration evidence,
+> not current Host-experience acceptance or a hosted KDNA platform.
+
 ```bash
 npx create-kdna-web-app my-app
 cd my-app
@@ -33,7 +37,7 @@ npx create-kdna-web-app <project-name> [options]
 | `--no-install` | — | Scaffold files without running install |
 
 The release gate verifies npm across all three templates. It also runs the
-packed CLI's real install and Next.js production build with pnpm 11.14.0 and
+packed scaffolder's real install and Next.js production build with pnpm 11.14.0 and
 Yarn 1.22.22, so the advertised package-manager paths are executable rather
 than parser-only options.
 
@@ -86,7 +90,7 @@ npx create-kdna-web-app my-app --template nextjs-pages
 
 ## Pre-configured flow
 
-The Next.js templates provide the full React flow:
+The Next.js templates provide the published experimental React integration flow:
 
 1. User drops a `.kdna` file onto the `<KDNAFileDropzone>`.
 2. The file is uploaded and inspected — metadata appears immediately.
@@ -99,6 +103,12 @@ The Express template mounts the same `/api/kdna` server endpoints and includes
 a static page that explicitly calls inspect, plan-load, and load in order.
 All templates render projected objects with `JSON.stringify`; React objects are
 never passed directly as JSX children.
+
+The user explicitly selecting and dropping a file is the authority boundary for
+this demo flow. A product that remembers an attachment must additionally keep
+its exact identity, digest, scope, and reason visible and provide
+disable/switch/rollback controls. Saving an upload does not create broader task
+authority.
 
 ### Environment variables
 
@@ -145,7 +155,7 @@ kdna pack ./demo-judgment ./demo-judgment.kdna
 
 The scaffolder release gate packs the CLI, generates each template from that
 archive into an empty directory, performs a clean install, starts the actual
-production server, and uses Chromium with the accepted public Laozi asset to
+production server, and uses Chromium with the published Laozi reference asset to
 observe successful `/inspect`, `/plan-load`, and `/load` responses. A template
 is not accepted by import-only smoke tests.
 
