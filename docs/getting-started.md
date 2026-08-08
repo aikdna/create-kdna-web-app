@@ -59,7 +59,7 @@ Drop the file onto the page. You should see:
 3. The formatted Runtime Capsule context after a public asset loads.
 
 The browser demo does not parse the container. The selected file is uploaded
-to Web Server 0.3.0, and KDNA Core 0.20.0 performs validation, planning,
+to Web Server 0.3.1, and KDNA Core 0.21.0 performs validation, planning,
 authorization, and projection on the server.
 
 ---

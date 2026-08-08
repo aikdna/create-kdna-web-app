@@ -126,9 +126,9 @@ test('Pages Router normalizes its catch-all route for the Express adapter', () =
 test('template package dependencies use bounded version ranges', () => {
   const root = path.join(__dirname, '..');
   const expectedRanges = {
-    '@aikdna/kdna-core': '0.20.0',
-    '@aikdna/kdna-react': '0.3.0',
-    '@aikdna/kdna-web-server': '0.3.0',
+    '@aikdna/kdna-core': '0.21.0',
+    '@aikdna/kdna-react': '0.4.0',
+    '@aikdna/kdna-web-server': '0.3.1',
   };
 
   for (const template of ['nextjs', 'nextjs-pages', 'express']) {
@@ -197,7 +197,7 @@ test('pnpm templates approve only the exact native builds they require', () => {
   for (const template of ['express', 'nextjs', 'nextjs-pages']) {
     const source = fs.readFileSync(path.join(root, template, 'pnpm-workspace.yaml'), 'utf8');
     assert.match(source, /minimumReleaseAgeExclude:/u);
-    assert.match(source, /@aikdna\/kdna-core@0\.20\.0/u);
+    assert.match(source, /@aikdna\/kdna-core@0\.21\.0/u);
     assert.doesNotMatch(source, /@aikdna\/\*/u);
   }
 });
