@@ -71,9 +71,9 @@ try {
   assert.ok(!fs.existsSync(path.join(projectDir, 'package-lock.json')), `${manager} must not create an npm lockfile`);
 
   for (const [name, version] of Object.entries({
-    '@aikdna/kdna-core': '0.20.0',
-    '@aikdna/kdna-react': '0.3.0',
-    '@aikdna/kdna-web-server': '0.3.0',
+    '@aikdna/kdna-core': '0.21.0',
+    '@aikdna/kdna-react': '0.4.0',
+    '@aikdna/kdna-web-server': '0.3.1',
   })) {
     const entry = require.resolve(name, { paths: [projectDir] });
     const installed = packageFromEntry(entry, name);
@@ -83,8 +83,8 @@ try {
   const webClientEntry = require.resolve('@aikdna/kdna-web-client', { paths: [path.dirname(reactEntry)] });
   assert.equal(
     packageFromEntry(webClientEntry, '@aikdna/kdna-web-client').version,
-    '0.2.2',
-    `${manager} must install the React runtime dependency @aikdna/kdna-web-client@0.2.2`,
+    '0.3.0',
+    `${manager} must install the React runtime dependency @aikdna/kdna-web-client@0.3.0`,
   );
 
   run(manager, ['run', 'test'], projectDir);

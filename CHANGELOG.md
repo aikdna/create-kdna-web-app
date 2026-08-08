@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.0 (2026-08-08)
+
+- Upgrade all templates to the published consumer chain: KDNA Core 0.21.0,
+  Web Server 0.3.1, React 0.4.0, Web Client 0.3.0 (0.21.0 Runtime Capsules
+  validate end to end in generated apps).
+
 ## Unreleased
 
 - Update the documented KDNA CLI install coordinate to the verified

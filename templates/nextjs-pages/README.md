@@ -1,7 +1,7 @@
 # KDNA Next.js Pages Router starter
 
-This generated Node.js 20+ application binds KDNA Core 0.20.0, Web Server
-0.3.0, and React 0.3.0. The browser uploads a selected `.kdna` file; the server
+This generated Node.js 20+ application binds KDNA Core 0.21.0, Web Server
+0.3.1, and React 0.4.0. The browser uploads a selected `.kdna` file; the server
 then performs inspect, LoadPlan evaluation, authorization, and Runtime Capsule
 projection.
 

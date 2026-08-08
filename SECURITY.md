@@ -20,10 +20,10 @@ pre-release and the canonical KDNA protocol/runtime surfaces.
 
 | Component | Supported Versions |
 |-----------|-------------------|
-| KDNA Core | 0.20.0 |
-| KDNA Web Server | 0.3.0 |
-| KDNA React | 0.3.0 |
-| create-kdna-web-app | 0.4.0 |
+| KDNA Core | 0.21.0 |
+| KDNA Web Server | 0.3.1 |
+| KDNA React | 0.4.0 |
+| create-kdna-web-app | 0.5.0 |
 
 Older pre-release versions may receive critical security patches on a
 case-by-case basis.

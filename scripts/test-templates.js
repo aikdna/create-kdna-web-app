@@ -16,9 +16,9 @@ const node = process.execPath;
 const repositoryRoot = path.resolve(__dirname, '..');
 const workRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'create-kdna-web-app-production-'));
 const expectedKDNA = Object.freeze({
-  '@aikdna/kdna-core': '0.20.0',
-  '@aikdna/kdna-react': '0.3.0',
-  '@aikdna/kdna-web-server': '0.3.0',
+  '@aikdna/kdna-core': '0.21.0',
+  '@aikdna/kdna-react': '0.4.0',
+  '@aikdna/kdna-web-server': '0.3.1',
 });
 const protectedAssetSha256 = 'c4486ceacc08d29af2ecdbe6c02818f78b62722592be687f7f0da23130bbe188';
 const protectedTestVectorPassword = 'KDNA-TEST-VECTOR-2026';
@@ -26,12 +26,12 @@ const protectedTestVectorPassword = 'KDNA-TEST-VECTOR-2026';
 function assertRegistryLock(projectDir, template) {
   const lock = JSON.parse(fs.readFileSync(path.join(projectDir, 'package-lock.json'), 'utf8'));
   const expected = {
-    '@aikdna/kdna-core': '0.20.0',
-    '@aikdna/kdna-web-server': '0.3.0',
+    '@aikdna/kdna-core': '0.21.0',
+    '@aikdna/kdna-web-server': '0.3.1',
     ...(template.startsWith('nextjs')
       ? {
-          '@aikdna/kdna-react': '0.3.0',
-          '@aikdna/kdna-web-client': '0.2.2',
+          '@aikdna/kdna-react': '0.4.0',
+          '@aikdna/kdna-web-client': '0.3.0',
         }
       : {}),
   };
