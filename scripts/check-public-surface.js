@@ -13,6 +13,7 @@ const textExtensions = new Set([
 const findings = [];
 const forbiddenText = [
   ['private', 'x-plan'].join('/'),
+  ['integration', 'control'].join('-'),
   ['provider', 'error body'].join(' '),
   ['credential', 'path'].join(' '),
   ['credential', 'prefix'].join(' '),
