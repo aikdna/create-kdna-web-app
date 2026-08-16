@@ -136,7 +136,7 @@ npm run dev
 To get a `.kdna` file for testing:
 
 ```bash
-npm install -g @aikdna/kdna-cli@0.35.1
+npm install -g @aikdna/kdna-cli@0.36.1
 kdna demo judgment ./demo-judgment
 kdna pack ./demo-judgment ./demo-judgment.kdna
 ```
@@ -160,6 +160,14 @@ observe successful `/inspect`, `/plan-load`, and `/load` responses. A template
 is not accepted by import-only smoke tests.
 
 ---
+
+
+## Official packages
+
+Official KDNA packages are published under the `@aikdna` npm scope and the
+`aikdna` name on PyPI. The unscoped npm package `kdna` is not affiliated with
+the KDNA project. Install only from the official coordinates shown in this
+README.
 
 ## License
 
