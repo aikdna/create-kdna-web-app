@@ -41,7 +41,7 @@ test('scaffold creates a Next.js app router project without installing', () => {
   const pkg = JSON.parse(fs.readFileSync(path.join(project, 'package.json'), 'utf8'));
   assert.equal(pkg.name, 'demo-next');
   assert.equal(pkg.scripts.test, 'node scripts/smoke.mjs');
-  assert.equal(pkg.engines.node, '>=20');
+  assert.equal(pkg.engines.node, '>=22');
 });
 
 test('scaffold creates an Express project without installing', () => {
@@ -133,7 +133,7 @@ test('template package dependencies use bounded version ranges', () => {
 
   for (const template of ['nextjs', 'nextjs-pages', 'express']) {
     const pkg = JSON.parse(fs.readFileSync(path.join(root, 'templates', template, 'package.json'), 'utf8'));
-    assert.equal(pkg.engines.node, '>=20');
+    assert.equal(pkg.engines.node, '>=22');
     for (const [name, range] of Object.entries(pkg.dependencies || {})) {
       assert.notEqual(range, 'latest', `${template} should not use latest for ${name}`);
     }

@@ -59,7 +59,7 @@ try {
   const packedRoot = path.join(temp, 'package');
   const pkg = JSON.parse(fs.readFileSync(path.join(packedRoot, 'package.json'), 'utf8'));
   assert.equal(pkg.version, '0.5.0');
-  assert.equal(pkg.engines?.node, '>=20');
+  assert.equal(pkg.engines?.node, '>=22');
   assert.deepEqual(pkg.bin, { 'create-kdna-web-app': 'bin/create-kdna-web-app.js' });
   const license = fs.readFileSync(path.join(packedRoot, 'LICENSE'), 'utf8');
   assert.match(license, /END OF TERMS AND CONDITIONS/u);
@@ -71,7 +71,7 @@ try {
   );
   for (const template of ['express', 'nextjs-pages', 'nextjs']) {
     const templatePkg = JSON.parse(fs.readFileSync(path.join(packedRoot, 'templates', template, 'package.json'), 'utf8'));
-    assert.equal(templatePkg.engines?.node, '>=20');
+    assert.equal(templatePkg.engines?.node, '>=22');
     assert.equal(templatePkg.dependencies['@aikdna/kdna-core'], '0.21.0');
     assert.equal(templatePkg.dependencies['@aikdna/kdna-web-server'], '0.3.1');
     if (template.startsWith('nextjs')) {
