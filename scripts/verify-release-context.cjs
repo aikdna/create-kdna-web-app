@@ -34,7 +34,7 @@ function verifyReleaseContext({ packageJson, packageLock, changelog, releaseTag 
   });
   assert(parsedHeadings[0]?.version === version, `first CHANGELOG release heading must be ${version}`);
   assert(parsedHeadings.filter((heading) => heading.version === version).length === 1, 'CHANGELOG release heading must be unique');
-  assert(packageJson?.engines?.node === '>=20', 'release must preserve the Node 20 floor');
+  assert(packageJson?.engines?.node === '>=22', 'release must preserve the Node 22 floor');
   assert(packageJson?.devDependencies?.playwright === '1.61.1', 'browser gate must use exact Playwright 1.61.1');
   assert(packageLock?.packages?.['']?.devDependencies?.playwright === '1.61.1', 'lock must declare exact Playwright 1.61.1');
   assert(packageLock?.packages?.['node_modules/playwright']?.version === '1.61.1', 'lock must resolve Playwright 1.61.1');

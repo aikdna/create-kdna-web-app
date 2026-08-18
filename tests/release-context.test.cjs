@@ -12,7 +12,7 @@ function fixture() {
   return {
     packageJson: {
       version: '0.4.0',
-      engines: { node: '>=20' },
+      engines: { node: '>=22' },
       devDependencies: { playwright: '1.61.1' },
     },
     packageLock: {

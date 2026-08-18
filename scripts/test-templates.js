@@ -100,7 +100,7 @@ function generateFromPackedCli(archive, template) {
 
   const packagePath = path.join(projectDir, 'package.json');
   const pkg = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
-  assert.equal(pkg.engines?.node, '>=20', `${template} must require Node.js 20 or later`);
+  assert.equal(pkg.engines?.node, '>=22', `${template} must require Node.js 22 or later`);
   assert.equal(pkg.dependencies['@aikdna/kdna-core'], expectedKDNA['@aikdna/kdna-core']);
   assert.equal(pkg.dependencies['@aikdna/kdna-web-server'], expectedKDNA['@aikdna/kdna-web-server']);
   if (template.startsWith('nextjs')) {

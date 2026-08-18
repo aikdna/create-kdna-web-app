@@ -9,7 +9,7 @@
     "test": "node scripts/smoke.mjs"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "dependencies": {
     "@aikdna/kdna-core": "0.21.0",
