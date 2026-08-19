@@ -1,6 +1,6 @@
 # KDNA Express starter
 
-This generated Node.js 20+ application binds KDNA Core 0.21.0 and Web Server
+This generated Node.js 22+ application binds KDNA Core 0.21.0 and Web Server
 0.3.1. The static browser page uploads a selected `.kdna` file and explicitly
 executes inspect, plan-load, and load before rendering Runtime Capsule context.
 If LoadPlan requires a password, the page clears the password field around the
