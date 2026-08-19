@@ -12,7 +12,7 @@ cd my-app
 npm run dev
 ```
 
-Node.js 20 or later is required. Every template binds KDNA Core 0.21.0 and
+Node.js 22 or later is required. Every template binds KDNA Core 0.21.0 and
 Web Server 0.3.1. The Next.js templates additionally bind React 0.4.0.
 Generated apps execute the same inspect -> LoadPlan -> load -> Runtime Capsule
 flow; they do not decode `.kdna` containers directly.
