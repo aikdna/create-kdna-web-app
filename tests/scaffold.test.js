@@ -4,8 +4,8 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
 const fs = require('node:fs');
-const os = require('node:os');
 const path = require('node:path');
+const { createTempRoot } = require('../scripts/tmp-root.cjs');
 const { parseArgs, scaffold } = require('../src/scaffold');
 
 test('parseArgs handles template, package manager, and no-install flags', () => {
@@ -24,7 +24,7 @@ test('parseArgs rejects unknown options and missing option values', () => {
 });
 
 test('scaffold creates a Next.js app router project without installing', () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'create-kdna-web-app-'));
+  const tmp = createTempRoot('create-kdna-web-app-');
   const project = path.join(tmp, 'demo-next');
   const result = scaffold({ projectName: project, template: 'nextjs', packageManager: 'npm', install: false });
 
@@ -45,7 +45,7 @@ test('scaffold creates a Next.js app router project without installing', () => {
 });
 
 test('scaffold creates an Express project without installing', () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'create-kdna-web-app-'));
+  const tmp = createTempRoot('create-kdna-web-app-');
   const project = path.join(tmp, 'demo-express');
   scaffold({ projectName: project, template: 'express', packageManager: 'npm', install: false });
 
@@ -60,7 +60,7 @@ test('scaffold creates an Express project without installing', () => {
 });
 
 test('scaffold creates a Next.js Pages project with a smoke test', () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'create-kdna-web-app-'));
+  const tmp = createTempRoot('create-kdna-web-app-');
   const project = path.join(tmp, 'demo-pages');
   scaffold({ projectName: project, template: 'nextjs-pages', packageManager: 'npm', install: false });
 
@@ -289,7 +289,7 @@ test('npm package includes public docs and security policy', () => {
 });
 
 test('scaffold rejects non-empty target directories', () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'create-kdna-web-app-'));
+  const tmp = createTempRoot('create-kdna-web-app-');
   const project = path.join(tmp, 'existing-project');
   fs.mkdirSync(project);
   fs.writeFileSync(path.join(project, 'existing.txt'), 'x');
@@ -300,7 +300,7 @@ test('scaffold rejects non-empty target directories', () => {
 });
 
 test('scaffold rejects project directory names that cannot be safe package names', () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'create-kdna-web-app-'));
+  const tmp = createTempRoot('create-kdna-web-app-');
   assert.throws(
     () => scaffold({
       projectName: path.join(tmp, 'Invalid Name'),
