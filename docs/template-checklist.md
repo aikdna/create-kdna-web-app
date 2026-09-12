@@ -13,6 +13,10 @@
 - Check cancellation/release/replacement and late responses through real HTTP.
 - Verify source and packed generation in fresh directories, offline locked
   installs, seven package member identities, production builds and real browsers.
+- Run the packed-CLI production gate with all three explicit inputs; the
+  current App Router leg needs an authorized current-contract asset and a
+  judgment id that asset discloses, because the published reference assets
+  predate the component-semantics contract.
 - Preserve bin/engine/Apache license, no-dev-leak and deterministic-pack guards.
 - Record actual process/port exits, argv/environment/cwd, failures and NOT_RUN.
 

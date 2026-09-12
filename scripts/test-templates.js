@@ -5,26 +5,83 @@ const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
 const fs = require('node:fs');
 const net = require('node:net');
-const os = require('node:os');
 const path = require('node:path');
 const { spawn, spawnSync } = require('node:child_process');
 const { once } = require('node:events');
 const { chromium } = require('playwright');
+const { createTempRoot } = require('./tmp-root.cjs');
 
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const node = process.execPath;
 const repositoryRoot = path.resolve(__dirname, '..');
-const workRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'create-kdna-web-app-production-'));
+const workRoot = createTempRoot('create-kdna-web-app-production-');
+// The legacy templates resolve published coordinates from the npm registry; the
+// current basic template binds accepted component-semantics candidates from its
+// own vendor directory and keeps its loopback Host in a separate lockfile.
 const expectedKDNA = Object.freeze({
   '@aikdna/kdna-core': '0.21.0',
   '@aikdna/kdna-react': '0.4.0',
   '@aikdna/kdna-web-server': '0.3.1',
+});
+const currentAppKDNA = Object.freeze({
+  '@aikdna/kdna-core': 'file:vendor/aikdna-kdna-core-0.24.0-rc.component-semantics.2.tgz',
+  '@aikdna/kdna-read': 'file:vendor/aikdna-kdna-read-0.3.0-rc.component-semantics.2.tgz',
+  '@aikdna/kdna-web-client': 'file:vendor/aikdna-kdna-web-client-0.5.0-rc.component-semantics.1.tgz',
+  '@aikdna/kdna-react': 'file:vendor/aikdna-kdna-react-0.6.0-rc.component-semantics.1.tgz',
+});
+const currentHostKDNA = Object.freeze({
+  '@aikdna/kdna-core': 'file:vendor/aikdna-kdna-core-0.24.0-rc.component-semantics.2.tgz',
+  '@aikdna/kdna-read': 'file:vendor/aikdna-kdna-read-0.3.0-rc.component-semantics.2.tgz',
+  '@aikdna/kdna-web-server': 'file:vendor/aikdna-kdna-web-server-0.5.0-rc.component-semantics.1.tgz',
+});
+const currentRegistryPins = Object.freeze({
+  next: '16.2.12',
+  react: '19.2.7',
+  'react-dom': '19.2.7',
 });
 const protectedAssetSha256 = 'c4486ceacc08d29af2ecdbe6c02818f78b62722592be687f7f0da23130bbe188';
 const protectedTestVectorPassword = 'KDNA-TEST-VECTOR-2026';
 
 function assertRegistryLock(projectDir, template) {
   const lock = JSON.parse(fs.readFileSync(path.join(projectDir, 'package-lock.json'), 'utf8'));
+  if (template === 'nextjs') {
+    const hostLock = JSON.parse(fs.readFileSync(path.join(projectDir, 'host/package-lock.json'), 'utf8'));
+    for (const [label, source, coordinates] of [
+      ['application', lock, currentAppKDNA],
+      ['loopback Host', hostLock, currentHostKDNA],
+    ]) {
+      for (const [name, coordinate] of Object.entries(coordinates)) {
+        const entry = source.packages?.[`node_modules/${name}`];
+        assert.equal(entry?.resolved, coordinate, `current ${label} must bind ${name} at ${coordinate}`);
+        assert.notEqual(entry?.link, true, `current ${label} cannot link ${name} from a local package`);
+        assert.match(entry?.integrity || '', /^sha512-/u, `current ${label} must record integrity for ${name}`);
+      }
+    }
+    for (const [name, version] of Object.entries(currentRegistryPins)) {
+      const entry = lock.packages?.[`node_modules/${name}`];
+      assert.equal(entry?.version, version, `current application lock must resolve ${name}@${version}`);
+      assert.match(
+        entry?.resolved || '',
+        /^https:\/\/registry\.npmjs\.org\//u,
+        `current application lock must resolve ${name} from the npm registry`,
+      );
+    }
+    assert.equal(
+      lock.packages?.['node_modules/@aikdna/kdna-web-server'],
+      undefined,
+      'the current application graph must not hoist the loopback Host graph',
+    );
+    console.log(JSON.stringify({
+      schema: 'kdna.scaffolder-registry-lock',
+      schema_version: '0.1.0',
+      template,
+      status: 'passed',
+      coordinates: currentAppKDNA,
+      host_coordinates: currentHostKDNA,
+      registry_pins: currentRegistryPins,
+    }));
+    return;
+  }
   const expected = {
     '@aikdna/kdna-core': '0.21.0',
     '@aikdna/kdna-web-server': '0.3.1',
@@ -101,10 +158,25 @@ function generateFromPackedCli(archive, template) {
   const packagePath = path.join(projectDir, 'package.json');
   const pkg = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
   assert.equal(pkg.engines?.node, '>=22', `${template} must require Node.js 22 or later`);
-  assert.equal(pkg.dependencies['@aikdna/kdna-core'], expectedKDNA['@aikdna/kdna-core']);
-  assert.equal(pkg.dependencies['@aikdna/kdna-web-server'], expectedKDNA['@aikdna/kdna-web-server']);
-  if (template.startsWith('nextjs')) {
-    assert.equal(pkg.dependencies['@aikdna/kdna-react'], expectedKDNA['@aikdna/kdna-react']);
+  if (template === 'nextjs') {
+    for (const [name, coordinate] of Object.entries(currentAppKDNA)) {
+      assert.equal(pkg.dependencies[name], coordinate, `current application must bind ${name} at ${coordinate}`);
+    }
+    assert.equal(
+      pkg.dependencies['@aikdna/kdna-web-server'],
+      undefined,
+      'the loopback Host dependency belongs to host/package.json, not the application',
+    );
+    const hostPkg = JSON.parse(fs.readFileSync(path.join(projectDir, 'host/package.json'), 'utf8'));
+    for (const [name, coordinate] of Object.entries(currentHostKDNA)) {
+      assert.equal(hostPkg.dependencies[name], coordinate, `current Host must bind ${name} at ${coordinate}`);
+    }
+  } else {
+    assert.equal(pkg.dependencies['@aikdna/kdna-core'], expectedKDNA['@aikdna/kdna-core']);
+    assert.equal(pkg.dependencies['@aikdna/kdna-web-server'], expectedKDNA['@aikdna/kdna-web-server']);
+    if (template.startsWith('nextjs')) {
+      assert.equal(pkg.dependencies['@aikdna/kdna-react'], expectedKDNA['@aikdna/kdna-react']);
+    }
   }
   return projectDir;
 }
@@ -247,13 +319,91 @@ async function closeBrowser(browser, browserServer, template) {
   );
 }
 
-async function exerciseBrowser(projectDir, template, assetPath, protectedAssetPath) {
+// The current basic template exposes exactly one KDNA operation. Everything the
+// retired LoadPlan surface used to answer must stay unsupported there.
+async function assertCurrentReadSurface(baseUrl) {
+  const observed = {};
+  for (const operation of ['inspect', 'plan-load', 'load']) {
+    const response = await fetch(`${baseUrl}/api/kdna/${operation}`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: '{}',
+    });
+    observed[operation] = response.status;
+    assert.equal(response.status, 501, `current template must not answer ${operation}`);
+    assert.equal((await response.json()).code, 'DEMO_OPERATION_UNSUPPORTED');
+  }
+  const getRead = await fetch(`${baseUrl}/api/kdna/read`);
+  observed['GET read'] = getRead.status;
+  await getRead.arrayBuffer();
+  assert.equal(getRead.status, 405, 'the current Read route must reject GET');
+  console.log(JSON.stringify({
+    schema: 'kdna.scaffolder-read-only-surface',
+    schema_version: '0.1.0',
+    template: 'nextjs',
+    status: 'passed',
+    operations: observed,
+  }));
+}
+
+async function exerciseCurrentRead(page, assetPath, judgmentId, operations, failures) {
+  const step = async (label, action) => {
+    console.log(`nextjs: read step ${label}`);
+    return action();
+  };
+  await step('set-input-files', () => page.locator('input[type=file]').setInputFiles(assetPath));
+  // A public Read request is an explicit judgment selection, so the harness
+  // supplies a judgment id that exists in the supplied current-contract asset.
+  await step('fill-judgment-id', () => page.locator('#judgment-id').fill(judgmentId));
+  await step('click-read', () => page.getByRole('button', { name: 'Read', exact: true }).click());
+  await step('await-status-visible', () => page.locator('p[aria-atomic="true"]').waitFor({ state: 'visible', timeout: 60_000 }));
+  await step('await-status-received', () => page.waitForFunction(
+    () => Array.from(document.querySelectorAll('p[aria-atomic="true"]'))
+      .some((node) => (node.textContent || '').includes('Read state: received')),
+    null,
+    { timeout: 60_000 },
+  ));
+
+  const view = page.locator('section[aria-label="Remote read result"]');
+  await step('await-read-view', () => view.waitFor({ state: 'visible', timeout: 60_000 }));
+  const rendered = (await step('read-view-text', () => view.textContent())) || '';
+  assert.match(rendered, /Remote read response/u, 'the current template did not render the public Read view');
+  assert.match(
+    rendered,
+    /Response: received; channel: read_envelope; HTTP 200/u,
+    'the current template did not receive a ready public read envelope',
+  );
+  assert.match(rendered, /Asset: /u, 'the current template did not disclose the read asset identity');
+  assert.doesNotMatch(rendered, /Content not disclosed/u, 'the current template withheld the accepted read content');
+  assert.deepEqual(
+    operations,
+    [['/api/kdna/read', 200]],
+    'the current template must execute exactly one explicit Read request and no retired operation',
+  );
+  assert.deepEqual(failures, [], `current Read browser failures: ${failures.join('; ')}`);
+  console.log(JSON.stringify({
+    schema: 'kdna.scaffolder-current-read-e2e',
+    schema_version: '0.1.0',
+    template: 'nextjs',
+    status: 'passed',
+    operations,
+    rendered_read_view: true,
+  }));
+  console.log('nextjs: current Read surface, explicit Read flow and Chromium rendering passed.');
+}
+
+async function exerciseBrowser(projectDir, template, assetPath, protectedAssetPath, currentAssetPath, currentJudgmentId) {
   const port = await freePort();
   const storageDir = path.join(workRoot, 'storage', template);
+  const isCurrent = template === 'nextjs';
   const isNext = template.startsWith('nextjs');
-  const args = isNext
-    ? [path.join(projectDir, 'node_modules/next/dist/bin/next'), 'start', '-H', '127.0.0.1', '-p', String(port)]
-    : [path.join(projectDir, 'src/server.js')];
+  // The current basic template owns two processes: the application and its
+  // separate loopback Host. Its own documented launcher starts both.
+  const args = isCurrent
+    ? [path.join(projectDir, 'scripts/start-local.mjs'), '--port', String(port), '--host-port', String(port + 1)]
+    : isNext
+      ? [path.join(projectDir, 'node_modules/next/dist/bin/next'), 'start', '-H', '127.0.0.1', '-p', String(port)]
+      : [path.join(projectDir, 'src/server.js')];
   const output = [];
   const child = spawn(node, args, {
     cwd: projectDir,
@@ -261,6 +411,7 @@ async function exerciseBrowser(projectDir, template, assetPath, protectedAssetPa
       ...process.env,
       KDNA_STORAGE_DIR: storageDir,
       PORT: String(port),
+      NEXT_TELEMETRY_DISABLED: '1',
     },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
@@ -283,7 +434,7 @@ async function exerciseBrowser(projectDir, template, assetPath, protectedAssetPa
   });
   page.on('response', (response) => {
     const pathname = new URL(response.url()).pathname;
-    if (['/api/kdna/inspect', '/api/kdna/plan-load', '/api/kdna/load'].includes(pathname)) {
+    if (['/api/kdna/inspect', '/api/kdna/plan-load', '/api/kdna/load', '/api/kdna/read'].includes(pathname)) {
       operations.push([pathname, response.status()]);
     }
   });
@@ -293,6 +444,18 @@ async function exerciseBrowser(projectDir, template, assetPath, protectedAssetPa
     await waitForServer(baseUrl, child);
     console.log(`${template}: opening production page in Chromium.`);
     await page.goto(baseUrl, { waitUntil: 'networkidle' });
+    if (isCurrent) {
+      await assertCurrentReadSurface(baseUrl);
+      await exerciseCurrentRead(page, currentAssetPath, currentJudgmentId, operations, failures);
+      console.log(JSON.stringify({
+        schema: 'kdna.scaffolder-protected-template-e2e',
+        schema_version: '0.1.0',
+        template,
+        status: 'not_run',
+        reason: 'the current basic Read contract has no password or LoadPlan flow',
+      }));
+      return;
+    }
     console.log(`${template}: uploading accepted public asset.`);
     await page.locator('input[type=file]').setInputFiles(assetPath);
     await page.locator('#kdna-runtime-capsule').waitFor({ state: 'visible', timeout: 60_000 });
@@ -363,6 +526,7 @@ async function exerciseBrowser(projectDir, template, assetPath, protectedAssetPa
     const body = await page.locator('body').innerText().catch(() => '(body unavailable)');
     console.error(
       `${template}: browser failure before cleanup: ${error.message}\n`
+      + `stack=${error.stack}\n`
       + `operations=${JSON.stringify(operations)}\n`
       + `browser=${JSON.stringify(failures)}\n`
       + `body=${body.slice(0, 4_000)}\n${serverOutput}`,
@@ -379,6 +543,8 @@ async function main() {
   const browserChild = process.argv[2] === '--browser-child';
   const assetSource = browserChild ? process.argv[5] : process.env.KDNA_TEST_ASSET;
   const protectedAssetSource = browserChild ? process.argv[6] : process.env.KDNA_TEST_PROTECTED_ASSET;
+  const currentAssetSource = browserChild ? process.argv[7] : process.env.KDNA_TEST_CURRENT_ASSET;
+  const currentJudgmentId = browserChild ? process.argv[8] : process.env.KDNA_TEST_CURRENT_JUDGMENT_ID;
   assert.ok(assetSource, 'KDNA_TEST_ASSET must point to an accepted public .kdna asset');
   const assetPath = path.resolve(assetSource);
   assert.ok(fs.statSync(assetPath).isFile(), 'KDNA_TEST_ASSET must be a file');
@@ -390,13 +556,27 @@ async function main() {
   assert.ok(fs.statSync(protectedAssetPath).isFile(), 'KDNA_TEST_PROTECTED_ASSET must be a file');
   const protectedDigest = crypto.createHash('sha256').update(fs.readFileSync(protectedAssetPath)).digest('hex');
   assert.equal(protectedDigest, protectedAssetSha256, 'protected Core test vector digest drifted');
+  // The current basic template consumes the component-semantics contract, which
+  // rejects every pre-component-semantics public reference asset. Its gate leg
+  // therefore needs an explicitly authorized current-contract asset.
+  assert.ok(
+    currentAssetSource,
+    'KDNA_TEST_CURRENT_ASSET must point to an authorized current-contract .kdna asset',
+  );
+  const currentAssetPath = path.resolve(currentAssetSource);
+  assert.ok(fs.statSync(currentAssetPath).isFile(), 'KDNA_TEST_CURRENT_ASSET must be a file');
+  const currentAssetDigest = crypto.createHash('sha256').update(fs.readFileSync(currentAssetPath)).digest('hex');
+  assert.ok(
+    currentJudgmentId,
+    'KDNA_TEST_CURRENT_JUDGMENT_ID must name a judgment id the current-contract asset discloses',
+  );
   if (browserChild) {
     const template = process.argv[3];
     const projectDir = process.argv[4];
     assert.ok(['express', 'nextjs-pages', 'nextjs'].includes(template), 'browser child requires a known template');
     assert.ok(projectDir, 'browser child requires an exact generated project directory');
     try {
-      await exerciseBrowser(projectDir, template, assetPath, protectedAssetPath);
+      await exerciseBrowser(projectDir, template, assetPath, protectedAssetPath, currentAssetPath, currentJudgmentId);
       fs.rmSync(workRoot, { recursive: true, force: true });
       console.log(JSON.stringify({
         schema: 'kdna.scaffolder-browser-cleanup',
@@ -411,12 +591,27 @@ async function main() {
       process.exit(1);
     }
   }
+  console.log(JSON.stringify({
+    schema: 'kdna.scaffolder-asset-inputs',
+    schema_version: '0.1.0',
+    legacy_asset: {
+      file: path.basename(assetPath),
+      bytes: fs.statSync(assetPath).size,
+      sha256: crypto.createHash('sha256').update(fs.readFileSync(assetPath)).digest('hex'),
+    },
+    protected_asset: { file: path.basename(protectedAssetPath), bytes: fs.statSync(protectedAssetPath).size, sha256: protectedDigest },
+    current_asset: { file: path.basename(currentAssetPath), bytes: fs.statSync(currentAssetPath).size, sha256: currentAssetDigest },
+    current_judgment_id: currentJudgmentId,
+  }));
   const archive = packCli();
   const projects = [];
 
   for (const template of ['express', 'nextjs-pages', 'nextjs']) {
     const projectDir = generateFromPackedCli(archive, template);
-    run(npm, ['install', '--ignore-scripts', '--no-audit', '--no-fund'], projectDir);
+    // The current basic template installs its application and its separate
+    // loopback Host from two lockfiles through its own public setup command.
+    if (template === 'nextjs') run(npm, ['run', 'setup'], projectDir);
+    else run(npm, ['install', '--ignore-scripts', '--no-audit', '--no-fund'], projectDir);
     assertRegistryLock(projectDir, template);
     run(npm, ['test'], projectDir);
     if (template.startsWith('nextjs')) run(npm, ['run', 'build'], projectDir);
@@ -426,7 +621,7 @@ async function main() {
   for (const [template, projectDir] of projects) {
     run(
       node,
-      [__filename, '--browser-child', template, projectDir, assetPath, protectedAssetPath],
+      [__filename, '--browser-child', template, projectDir, assetPath, protectedAssetPath, currentAssetPath, currentJudgmentId],
       repositoryRoot,
     );
   }

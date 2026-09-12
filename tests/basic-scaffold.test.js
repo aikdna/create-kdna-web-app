@@ -3,11 +3,11 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const os = require('node:os');
 const { execFileSync, spawnSync } = require('node:child_process');
+const { createTempRoot } = require('../scripts/tmp-root.cjs');
 const { scaffold } = require('../src/scaffold');
 const root = path.join(__dirname, '..');
-const fresh = () => fs.mkdtempSync(path.join(os.tmpdir(), 'basic-scaffold-test-'));
+const fresh = () => createTempRoot('basic-scaffold-test-');
 
 test('generation preserves binary tar bytes and modes for both independent graphs', () => {
   const out = path.join(fresh(), 'binary-project');

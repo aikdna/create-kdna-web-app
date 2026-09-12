@@ -3,13 +3,13 @@
 
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
-const os = require('node:os');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
+const { createTempRoot } = require('./tmp-root.cjs');
 
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const root = path.resolve(__dirname, '..');
-const workRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'create-kdna-package-manager-'));
+const workRoot = createTempRoot('create-kdna-package-manager-');
 const [manager, expectedVersion] = process.argv.slice(2);
 
 function run(command, args, cwd, capture = false) {

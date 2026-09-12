@@ -111,6 +111,20 @@ browser Read and resource closure. None alone signs independent acceptance.
 Network/Git-dependent legacy release gates are separate obligations; no shim
 or newly initialized Git repository substitutes for them.
 
+`npm run test:templates` is the packed-CLI production adoption gate: it packs
+this repository, generates each template, installs the generated lockfiles,
+builds both Next.js templates and drives real Chromium against the generated
+servers. It takes three explicit inputs: `KDNA_TEST_ASSET` (the published
+reference used by the Pages and Express flows), `KDNA_TEST_PROTECTED_ASSET`
+(the pinned Core password test vector) and `KDNA_TEST_CURRENT_ASSET` together
+with `KDNA_TEST_CURRENT_JUDGMENT_ID` (an authorized component-semantics asset
+and one judgment id that asset discloses). The two legacy templates execute
+inspect -> plan-load -> load; the current App Router template executes exactly
+one explicit Read, keeps inspect, plan-load and load at 501 and rejects GET on
+the Read route. The published reference assets predate the component-semantics
+contract and are rejected by the current public Core, so the current-template
+leg needs an authorized current-contract asset.
+
 See [getting started](docs/getting-started.md), [templates](docs/templates.md),
 [checklist](docs/template-checklist.md) and [security policy](SECURITY.md).
 
