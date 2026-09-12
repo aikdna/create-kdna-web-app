@@ -1,3 +1,8 @@
 node_modules/
 *.tgz
+# Vendored offline dependency graphs for the generated templates travel with
+# the repository so a clean clone can run `npm ci --offline`; every other
+# *.tgz stays ignored.
+!templates/nextjs/vendor/*.tgz
+!templates/nextjs/host/vendor/*.tgz
 public-assets/
