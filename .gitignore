@@ -6,3 +6,8 @@ node_modules/
 !templates/nextjs/vendor/*.tgz
 !templates/nextjs/host/vendor/*.tgz
 public-assets/
+
+
+# Internal Open-line evidence and progress material: kept in the working tree,
+# never part of the public repository surface.
+delivery/
