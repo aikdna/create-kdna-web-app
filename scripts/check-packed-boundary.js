@@ -58,7 +58,7 @@ try {
   execFileSync('tar', ['-xzf', second, '-C', temp]);
   const packedRoot = path.join(temp, 'package');
   const pkg = JSON.parse(fs.readFileSync(path.join(packedRoot, 'package.json'), 'utf8'));
-  assert.equal(pkg.version, '0.5.0');
+  assert.equal(pkg.version, '0.6.0');
   assert.equal(pkg.engines?.node, '>=22');
   assert.deepEqual(pkg.bin, { 'create-kdna-web-app': 'bin/create-kdna-web-app.js' });
   const license = fs.readFileSync(path.join(packedRoot, 'LICENSE'), 'utf8');
@@ -72,12 +72,18 @@ try {
   for (const template of ['express', 'nextjs-pages', 'nextjs']) {
     const templatePkg = JSON.parse(fs.readFileSync(path.join(packedRoot, 'templates', template, 'package.json'), 'utf8'));
     assert.equal(templatePkg.engines?.node, '>=22');
-    assert.equal(templatePkg.dependencies['@aikdna/kdna-core'], '0.21.0');
-    assert.equal(templatePkg.dependencies['@aikdna/kdna-web-server'], '0.3.1');
+    assert.equal(templatePkg.dependencies['@aikdna/kdna-core'], template === 'nextjs' ? 'file:vendor/aikdna-kdna-core-0.24.0-rc.component-semantics.2.tgz' : '0.21.0');
+    assert.equal(templatePkg.dependencies['@aikdna/kdna-web-server'], template === 'nextjs' ? undefined : '0.3.1');
     if (template.startsWith('nextjs')) {
-      assert.equal(templatePkg.dependencies['@aikdna/kdna-react'], '0.4.0');
+      assert.equal(templatePkg.dependencies['@aikdna/kdna-react'], template === 'nextjs' ? 'file:vendor/aikdna-kdna-react-0.6.0-rc.component-semantics.1.tgz' : '0.4.0');
     }
   }
+  const basic = path.join(packedRoot, 'templates/nextjs');
+  assert.ok(fs.existsSync(path.join(basic, 'scripts/install.mjs')));
+  const host = JSON.parse(fs.readFileSync(path.join(basic, 'host/package.json'), 'utf8'));
+  assert.equal(host.dependencies['@aikdna/kdna-web-server'], 'file:vendor/aikdna-kdna-web-server-0.5.0-rc.component-semantics.1.tgz');
+  assert.equal(host.dependencies['@aikdna/kdna-read'], 'file:vendor/aikdna-kdna-read-0.3.0-rc.component-semantics.2.tgz');
+  assert.equal(fs.statSync(path.join(packedRoot, 'bin/create-kdna-web-app.js')).mode & 0o777, 0o755);
   const help = execFileSync(process.execPath, [path.join(packedRoot, 'bin/create-kdna-web-app.js'), '--help'], {
     encoding: 'utf8',
   });

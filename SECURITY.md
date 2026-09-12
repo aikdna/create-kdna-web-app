@@ -14,32 +14,30 @@ Please do not disclose the vulnerability publicly until we have had a chance to 
 
 ## Supported Versions
 
-`create-kdna-web-app` is a pre-release scaffolder support surface. Until the
-first stable package release, security support tracks the latest mainline
-pre-release and the canonical KDNA protocol/runtime surfaces.
-
-| Component | Supported Versions |
-|-----------|-------------------|
-| KDNA Core | 0.21.0 |
-| KDNA Web Server | 0.3.1 |
-| KDNA React | 0.4.0 |
-| create-kdna-web-app | 0.5.0 |
-
-Older pre-release versions may receive critical security patches on a
-case-by-case basis.
+The historical 0.5.0 scaffold binds Core 0.21.0 / Web Server 0.3.1 / React 0.4.0.
+The unpublished 0.6.0 candidate upgrades only basic App Router + npm, with exact
+application Core 0.24.0-rc.component-semantics.2 / Read 0.3.0-rc.component-semantics.2 /
+Client 0.5.0-rc.component-semantics.1 / React 0.6.0-rc.component-semantics.1 and a
+separate Host 0.5.0-rc.component-semantics.1 / same accepted Core archive /
+Read 0.3.0-rc.component-semantics.2 graph. It does not withdraw the
+historical Pages/Express support policy or establish a new stable release.
+Older pre-release versions may receive critical security patches case by case.
 
 ## Security Model
 
-`create-kdna-web-app` scaffolds KDNA-integrated web applications. Generated
-templates must consume the public KDNA package contracts rather than define
-protocol validity, access modes, LoadPlan states, or crypto policy.
+The current template consumes public Core/Read/Client/React contracts. Selecting
+a file stays local; only explicit Read sends it through bounded loopback HTTP.
+It renders the official public ViewModel as literal text, never interprets
+asset content as action authorization, and suppresses cancelled/released/old
+selection results. The operator policy example is not production authentication.
+The separate Host graph must not be hoisted into the application graph.
 
-The selected `.kdna` file exists briefly in browser memory while it is
-uploaded. Validation, authorization, decryption, profile selection, and
-Runtime Capsule projection happen on the server. Password and license inputs
-may exist briefly in browser form state; generated code must not log, persist,
-or reflect them. Raw license keys go to `/activate`, not `/load`.
+The setup command installs exact locked graphs with dependency scripts disabled.
+Current protected/remote flows, cross-request expand, real-human identity,
+strict React 19 declaration compile and full-platform security are not proved.
+Legacy Pages/Express retain their historical password/license model; those
+inputs must not be logged, persisted or reflected, and license keys belong at
+activation endpoints, not load. No secret provider is added by this candidate.
 
-For the KDNA Protocol security architecture, see
-[GOVERNANCE.md](https://github.com/aikdna/kdna/blob/main/docs/GOVERNANCE.md)
-in the main protocol repository.
+Report vulnerabilities through the channels above. Canonical protocol security
+remains [GOVERNANCE.md](https://github.com/aikdna/kdna/blob/main/docs/GOVERNANCE.md).

@@ -6,27 +6,25 @@
 
 ## `nextjs` (default)
 
-**When to use:** You are starting a new Next.js project or want the
-most up-to-date template.
-
-**Framework:** Next.js 16+ (App Router)
-
-**What it includes:**
-
-| File | Purpose |
-|------|---------|
-| `app/api/kdna/[...route]/route.js` | All KDNA endpoints (catch-all App Router route) |
-| `app/page.jsx` | Demo page: file drop, inspect, LoadPlan, load, display |
-| `.env.local.example` | Environment variable template |
-
-**Start:**
+Current basic App Router + npm, delivered as an unpublished local candidate.
+Its application and separate loopback Host use two exact lockfiles and seven
+bundled KDNA archives. `npm run setup` installs both with hooks disabled.
+Selection stays local; explicit Read renders the official public ViewModel.
+Cancel, Release and replacement suppress late responses. Expand is unsupported.
 
 ```bash
-npx create-kdna-web-app my-app --template nextjs
-cd my-app && npm run dev
+create-kdna-web-app my-app --template nextjs --package-manager npm
+cd my-app && npm run build && npm start
+# http://127.0.0.1:3210
 ```
 
----
+`--no-install` copies only files; then use `npm run setup`. pnpm/Yarn are not
+upgraded or verified for this current template. See its README for exact pins.
+
+## Legacy scope
+
+The following Pages/Express descriptions and commands document retained
+historical support; they are not current basic upgrades or new acceptance.
 
 ## `nextjs-pages`
 

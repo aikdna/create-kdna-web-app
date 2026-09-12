@@ -1,8 +1,8 @@
 const nextConfig = {
-  // KDNA Core loads packaged runtime schemas with Node.js file APIs. Keep it
-  // outside the Turbopack server bundle so App Router production builds use
-  // the package exactly as they do at runtime.
-  serverExternalPackages: ['@aikdna/kdna-core'],
+  // Browser/Next consumes only the accepted portable graph. Basic Host is a
+  // separate loopback process and is never bundled into this application.
+  poweredByHeader: false,
+  devIndicators: false,
+  experimental: { cpus: 2 },
 }
-
 export default nextConfig
