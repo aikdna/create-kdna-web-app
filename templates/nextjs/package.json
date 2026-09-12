@@ -1,28 +1,33 @@
 {
   "name": "{{projectName}}",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "test": "node scripts/smoke.mjs"
-  },
   "engines": {
     "node": ">=22"
   },
+  "scripts": {
+    "setup": "node scripts/install.mjs",
+    "dev": "node scripts/start-local.mjs --dev",
+    "build": "next build --webpack",
+    "start": "node scripts/start-local.mjs",
+    "test": "node scripts/smoke.mjs"
+  },
   "dependencies": {
-    "@aikdna/kdna-core": "0.21.0",
-    "@aikdna/kdna-react": "0.4.0",
-    "@aikdna/kdna-web-server": "0.3.1",
-    "next": "^16.2.10",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7"
+    "@aikdna/kdna-core": "file:vendor/aikdna-kdna-core-0.24.0-rc.component-semantics.2.tgz",
+    "@aikdna/kdna-read": "file:vendor/aikdna-kdna-read-0.3.0-rc.component-semantics.2.tgz",
+    "@aikdna/kdna-web-client": "file:vendor/aikdna-kdna-web-client-0.5.0-rc.component-semantics.1.tgz",
+    "@aikdna/kdna-react": "file:vendor/aikdna-kdna-react-0.6.0-rc.component-semantics.1.tgz",
+    "next": "16.2.12",
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.61.1",
+    "cbor-x": "1.6.5"
   },
   "overrides": {
-    "postcss": "8.5.10"
-  },
-  "resolutions": {
-    "postcss": "8.5.10"
+    "postcss": "8.5.23",
+    "sharp": "0.35.3"
   }
 }

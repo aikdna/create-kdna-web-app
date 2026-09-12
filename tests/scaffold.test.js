@@ -78,13 +78,6 @@ test('template smoke scripts cover the generated KDNA server adapter imports', (
   const root = path.join(__dirname, '..');
   const cases = [
     {
-      template: 'nextjs',
-      route: 'app/api/kdna/[...route]/route.js',
-      smoke: 'scripts/smoke.mjs',
-      expectedImport: '@aikdna/kdna-web-server/nextjs',
-      expectedExport: 'createNextHandlers',
-    },
-    {
       template: 'nextjs-pages',
       route: 'pages/api/kdna/[...route].js',
       smoke: 'scripts/smoke.mjs',
@@ -130,6 +123,10 @@ test('template package dependencies use bounded version ranges', () => {
     '@aikdna/kdna-react': '0.4.0',
     '@aikdna/kdna-web-server': '0.3.1',
   };
+  const nextjsVendor = {
+    '@aikdna/kdna-core': 'file:vendor/aikdna-kdna-core-0.24.0-rc.component-semantics.2.tgz',
+    '@aikdna/kdna-react': 'file:vendor/aikdna-kdna-react-0.6.0-rc.component-semantics.1.tgz',
+  };
 
   for (const template of ['nextjs', 'nextjs-pages', 'express']) {
     const pkg = JSON.parse(fs.readFileSync(path.join(root, 'templates', template, 'package.json'), 'utf8'));
@@ -138,7 +135,8 @@ test('template package dependencies use bounded version ranges', () => {
       assert.notEqual(range, 'latest', `${template} should not use latest for ${name}`);
     }
     for (const [name, range] of Object.entries(expectedRanges)) {
-      if (pkg.dependencies[name]) assert.equal(pkg.dependencies[name], range);
+      if (pkg.dependencies[name]) assert.equal(pkg.dependencies[name], template === 'nextjs'
+        ? nextjsVendor[name] : range);
     }
   }
 });
@@ -146,7 +144,6 @@ test('template package dependencies use bounded version ranges', () => {
 test('browser templates execute LoadPlan before load and render structured content safely', () => {
   const root = path.join(__dirname, '..');
   for (const sourcePath of [
-    'templates/nextjs/app/page.jsx',
     'templates/nextjs-pages/pages/index.jsx',
   ]) {
     const source = fs.readFileSync(path.join(root, sourcePath), 'utf8');
@@ -167,13 +164,13 @@ test('browser templates execute LoadPlan before load and render structured conte
   assert.doesNotMatch(express, /loaded\.content \|\|/u);
 });
 
-test('App Router keeps KDNA Core outside the Turbopack server bundle', () => {
+test('App Router uses a separate loopback Host rather than bundling its graph', () => {
   const config = fs.readFileSync(
     path.join(__dirname, '..', 'templates', 'nextjs', 'next.config.mjs'),
     'utf8',
   );
-  assert.match(config, /serverExternalPackages/);
-  assert.match(config, /@aikdna\/kdna-core/);
+  assert.match(config, /separate loopback process/);
+  assert.doesNotMatch(config, /@aikdna\/kdna-web-server/);
 });
 
 test('Next.js templates pin patched PostCSS for npm audit hygiene', () => {
@@ -182,8 +179,8 @@ test('Next.js templates pin patched PostCSS for npm audit hygiene', () => {
   for (const template of ['nextjs', 'nextjs-pages']) {
     const pkg = JSON.parse(fs.readFileSync(path.join(root, 'templates', template, 'package.json'), 'utf8'));
     const pnpm = fs.readFileSync(path.join(root, 'templates', template, 'pnpm-workspace.yaml'), 'utf8');
-    assert.equal(pkg.overrides.postcss, '8.5.10');
-    assert.equal(pkg.resolutions.postcss, '8.5.10');
+    assert.equal(pkg.overrides.postcss, template === 'nextjs' ? '8.5.23' : '8.5.10');
+    if (template !== 'nextjs') assert.equal(pkg.resolutions.postcss, '8.5.10');
     assert.match(pnpm, /overrides:\n  postcss: 8\.5\.10/u);
     assert.match(pnpm, /allowBuilds:\n  cbor-extract: true\n  sharp: true/u);
   }
@@ -202,12 +199,12 @@ test('pnpm templates approve only the exact native builds they require', () => {
   }
 });
 
-test('Next.js templates do not install unused browser-client package', () => {
+test('only the current basic template installs the browser client it actually uses', () => {
   const root = path.join(__dirname, '..');
 
   for (const template of ['nextjs', 'nextjs-pages']) {
     const pkg = JSON.parse(fs.readFileSync(path.join(root, 'templates', template, 'package.json'), 'utf8'));
-    assert.equal(pkg.dependencies['@aikdna/kdna-web-client'], undefined);
+    assert.equal(pkg.dependencies['@aikdna/kdna-web-client'], template === 'nextjs' ? 'file:vendor/aikdna-kdna-web-client-0.5.0-rc.component-semantics.1.tgz' : undefined);
   }
 });
 

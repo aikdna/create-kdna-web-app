@@ -1,40 +1,28 @@
 # Template checklist
 
-Use this checklist when adding or changing a `create-kdna-web-app`
-template.
+## Current basic App Router + npm
 
-## Required files
+- Preserve exact binary archives and file modes; restrict text substitution to
+  declared package/lock/README placeholders and reject unsafe template entries.
+- Preserve safe target/argument/non-empty-directory and no-install boundaries.
+- Keep application and Host locks separate; never unify equal-version Core bytes.
+- Default generation and the documented no-install follow-up must both install
+  all seven fixed KDNA packages without hidden harness work or dependency hooks.
+- Select locally and Read explicitly through official Client/React APIs; display
+  only the public ViewModel, literal bounded text and accurate proof limits.
+- Check cancellation/release/replacement and late responses through real HTTP.
+- Verify source and packed generation in fresh directories, offline locked
+  installs, seven package member identities, production builds and real browsers.
+- Preserve bin/engine/Apache license, no-dev-leak and deterministic-pack guards.
+- Record actual process/port exits, argv/environment/cwd, failures and NOT_RUN.
 
-- `package.json` with bounded dependency ranges, never `latest`.
-- KDNA server route or server entrypoint.
-- Browser demo page that exercises inspect, plan-load, and load.
-- Environment example file for storage and activation settings.
-- `scripts/smoke.mjs` that imports the KDNA package entrypoints used by
-  the generated project.
-- A generated-project `README.md` that names the exact KDNA coordinates and
-  the inspect -> LoadPlan -> load boundary.
+## Retained historical obligations
 
-## Runtime boundaries
+Pages/Express and non-npm flows retain their source and previous support record.
+Their inspect -> LoadPlan -> load/password/activation acceptance and network/Git
+release gates must be assessed separately before any new claim. Do not replace
+those gates with a shim, skip their assertions silently, or claim all CI passed
+from the current basic checks. Existing release and DCO policies remain intact.
 
-- KDNA assets stay server-side after upload.
-- Decryption and license verification happen through
-  `@aikdna/kdna-web-server` or a compatible server API.
-- Raw license keys go to activation endpoints, not `/load`.
-- Remote-server configuration is not included until the server adapter
-  implements and documents that mode.
-
-## Verification
-
-- `npm run ci:static` passes in this repository.
-- A generated project includes the expected route, page, env example, and
-  smoke script.
-- The generated template package uses bounded dependency ranges.
-- Public docs and package metadata mention only templates that exist.
-- The packed CLI cold-generates all three templates; each clean install starts
-  its real production server and completes inspect -> plan-load -> load in
-  Chromium with both an accepted public asset and the pinned Core password
-  test vector.
-- The advertised npm, pnpm, and Yarn paths execute a real packed-CLI install;
-  the reference non-npm versions also complete a Next.js production build.
-- Browser output contains structured Runtime Capsule context, never
-  `[object Object]` or a server filesystem path.
+Import/static checks do not prove browser behavior, independent acceptance,
+strict React19 declaration compilation, full-platform security or publication.

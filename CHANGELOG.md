@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6.0 (unpublished candidate)
+
+- Update the current Next.js App Router + npm template to explicit basic Read, with separately locked application and loopback Host graphs.
+- Rebind the current basic template to the accepted component-semantics archives: React 0.6.0-rc.component-semantics.1, Core 0.24.0-rc.component-semantics.2, Read 0.3.0-rc.component-semantics.2, Web Client 0.5.0-rc.component-semantics.1, and Host 0.5.0-rc.component-semantics.1.
+- Preserve binary template archives and file modes; install both graphs through the same public setup command.
+- Pages Router, Express and non-npm flows retain their historical sources and are not upgraded or newly verified by this candidate.
+
 ## 0.5.0 (2026-08-08)
 
 - Upgrade all templates to the published consumer chain: KDNA Core 0.21.0,

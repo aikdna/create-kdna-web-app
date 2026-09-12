@@ -1,50 +1,34 @@
 # Getting started
 
-This page walks through the first five minutes after running
-`npx create-kdna-web-app`.
-
----
-
-## Create a project
+Use the approved local 0.6.0 candidate CLI for current basic App Router + npm:
 
 ```bash
-npx create-kdna-web-app my-app
+create-kdna-web-app my-app --package-manager npm
 cd my-app
+npm test
+npm run build
+npm start
 ```
 
----
+Open http://127.0.0.1:3210. Select an authorized current `.kdna` file, then
+choose Read. Selection is local; the explicit request renders the official
+public ViewModel. Cancel/Release/replacement suppress late results. Expand is
+unsupported and no local action capability is granted.
 
-## Configure environment variables
+If generation used `--no-install`, run `npm run setup` first. This one command
+installs both application and independent Host from their locks with
+`--ignore-scripts`; no second undocumented install is needed. With all locked
+registry tarballs preseeded, `npm_config_offline=true npm run setup` stays offline.
+Use `npm run dev` for development. Both local child processes are owned by the
+launcher. See the generated README for ports, policy limits and exact archives.
 
-```bash
-cp .env.local.example .env.local
-```
+The current template does not configure password/activation or migrate old
+assets. A local file alone is not consent to process it. pnpm/Yarn, Pages and
+Express are retained historical surfaces, not upgraded or retested here.
 
-`KDNA_STORAGE_DIR` is optional; set it when you want a stable upload directory
-instead of the operating-system temporary directory:
+## Historical template example
 
-```bash
-KDNA_STORAGE_DIR=/tmp/kdna
-```
-
-`KDNA_ACTIVATION_URL` is optional. Leave it empty unless you are working
-with licensed-mode assets and have a self-hosted activation server.
-
----
-
-## Start the development server
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000).
-
----
-
-## Try it with a real .kdna file
-
-Install the KDNA CLI and generate a current example asset:
+For the unchanged Pages/Express templates only, the previous example recipe is:
 
 ```bash
 npm install -g @aikdna/kdna-cli@0.36.1
@@ -52,21 +36,7 @@ kdna demo judgment ./demo-judgment
 kdna pack ./demo-judgment ./demo-judgment.kdna
 ```
 
-Drop the file onto the page. You should see:
+Those templates retain their old inspect/LoadPlan/load and storage/activation
+behavior. Do not apply that history as acceptance of current basic Read.
 
-1. The manifest metadata (domain, version, title).
-2. The LoadPlan state produced before loading.
-3. The formatted Runtime Capsule context after a public asset loads.
-
-The browser demo does not parse the container. The selected file is uploaded
-to Web Server 0.3.1, and KDNA Core 0.21.0 performs validation, planning,
-authorization, and projection on the server.
-
----
-
-## Next steps
-
-- [Templates](./templates.md) — switch to Express or Pages Router
-- [KDNA Core](https://github.com/aikdna/kdna) — understand the file format
-- [kdna-web-server docs](https://github.com/aikdna/kdna-web-server) — add auth middleware, configure storage
-- [kdna-react docs](https://github.com/aikdna/kdna-react) — customise the components
+See [templates](templates.md) and [checklist](template-checklist.md).

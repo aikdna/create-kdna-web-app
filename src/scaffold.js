@@ -121,20 +121,46 @@ function copyTemplate(srcDir, destDir, variables) {
     const name = entry.name === '_gitignore' ? '.gitignore' : entry.name;
     const dest = path.join(destDir, name);
 
+    const mode = fs.lstatSync(src).mode & 0o777;
     if (entry.isDirectory()) {
-      fs.mkdirSync(dest, { recursive: true });
+      fs.mkdirSync(dest, { recursive: true, mode });
+      fs.chmodSync(dest, mode);
       copyTemplate(src, dest, variables);
     } else {
-      let content = fs.readFileSync(src, 'utf8');
-      for (const [key, value] of Object.entries(variables)) {
-        content = content.replaceAll(`{{${key}}}`, value);
+      // Only these authored text files contain generator placeholders. Assets,
+      // archives and application source must preserve their literal bytes.
+      if (['package.json', 'package-lock.json', 'README.md'].includes(entry.name)) {
+        let content = fs.readFileSync(src, 'utf8');
+        for (const [key, value] of Object.entries(variables)) {
+          content = content.replaceAll(`{{${key}}}`, value);
+        }
+        fs.writeFileSync(dest, content, { flag: 'wx', mode });
+      } else {
+        fs.copyFileSync(src, dest, fs.constants.COPYFILE_EXCL);
       }
-      fs.writeFileSync(dest, content);
+      fs.chmodSync(dest, mode);
     }
   }
 }
 
+function validateTemplate(directory) {
+  const names = new Set();
+  for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+    const name = entry.name === '_gitignore' ? '.gitignore' : entry.name;
+    if (names.has(name) || (!entry.isDirectory() && !entry.isFile())) {
+      throw new Error(`Unsafe template entry: ${path.join(directory, entry.name)}`);
+    }
+    names.add(name);
+    if (entry.isDirectory()) validateTemplate(path.join(directory, entry.name));
+  }
+}
+
 function assertSafeProjectDir(projectDir) {
+  for (let current = projectDir; current !== path.dirname(current); current = path.dirname(current)) {
+    try {
+      if (fs.lstatSync(current).isSymbolicLink()) throw new Error(`Target path contains a symbolic link: ${current}`);
+    } catch (error) { if (error.code !== 'ENOENT') throw error; }
+  }
   if (fs.existsSync(projectDir) && fs.readdirSync(projectDir).length > 0) {
     const error = new Error(`Target directory is not empty: ${projectDir}`);
     error.exitCode = 1;
@@ -151,6 +177,10 @@ function scaffold(options) {
   const packageManager = options.packageManager || detectPackageManager();
   const projectDir = path.resolve(options.projectName);
   const projectName = path.basename(projectDir);
+  if (options.template === 'nextjs' && options.install && packageManager !== 'npm') {
+    throw new Error('The current basic nextjs installation supports npm only. Other package managers are not upgraded or verified; use --package-manager npm or --no-install.');
+  }
+  validateTemplate(templateRoot(options.template));
   assertSafeProjectDir(projectDir);
   fs.mkdirSync(projectDir, { recursive: true });
 
@@ -160,7 +190,9 @@ function scaffold(options) {
   });
 
   if (options.install) {
-    const [command, args] = packageInstallCommand(packageManager);
+    const [command, args] = options.template === 'nextjs'
+      ? [process.execPath, [path.join(projectDir, 'scripts/install.mjs')]]
+      : packageInstallCommand(packageManager);
     const result = spawnSync(command, args, { cwd: projectDir, stdio: 'inherit' });
     if (result.status !== 0) {
       const error = new Error(`${command} ${args.join(' ')} failed.`);
@@ -181,7 +213,8 @@ async function main(args) {
   }
   console.log(`Created ${result.projectName} with the ${result.template} template.`);
   if (!result.installed) {
-    console.log(`Skipped install. Run: cd ${path.relative(process.cwd(), result.projectDir)} && ${result.packageManager} install`);
+    const command = result.template === 'nextjs' ? 'npm run setup' : `${result.packageManager} install`;
+    console.log(`Skipped install. Run: cd ${JSON.stringify(path.relative(process.cwd(), result.projectDir))} && ${command}`);
   }
   return result;
 }

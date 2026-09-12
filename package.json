@@ -1,6 +1,6 @@
 {
   "name": "create-kdna-web-app",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Scaffold a KDNA-integrated web application with Next.js App Router, Next.js Pages Router, or Express templates.",
   "type": "commonjs",
   "bin": {
@@ -19,14 +19,15 @@
   "scripts": {
     "ci": "npm run ci:static && npm run test:templates && npm pack --dry-run --json",
     "ci:static": "npm test && npm run lint && npm run public:check && npm run naming:check && npm run package:check",
-    "test": "node --test tests/scaffold.test.js tests/release-context.test.cjs tests/dco.test.cjs",
+    "test": "node --test tests/scaffold.test.js tests/basic-scaffold.test.js tests/release-context.test.cjs tests/dco.test.cjs",
     "test:templates": "node scripts/test-templates.js",
     "lint": "node scripts/lint.js",
     "public:check": "node scripts/check-public-surface.js",
     "naming:check": "node scripts/check-naming-integrity.js",
     "package:check": "node scripts/check-packed-boundary.js",
     "release:context": "node scripts/verify-release-context.cjs",
-    "prepublishOnly": "npm run ci"
+    "prepublishOnly": "npm run ci",
+    "check:basic": "node scripts/check-basic-template.js"
   },
   "engines": {
     "node": ">=22"

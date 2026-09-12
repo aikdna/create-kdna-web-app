@@ -1,21 +1,6 @@
-import { createNextHandlers } from '@aikdna/kdna-web-server/nextjs'
-import {
-  KDNAAssetInspector,
-  KDNAFileDropzone,
-  KDNALoadPlanGate,
-  KDNAPasswordUnlockDialog,
-} from '@aikdna/kdna-react'
-
-for (const [name, value] of Object.entries({
-  createNextHandlers,
-  KDNAAssetInspector,
-  KDNAFileDropzone,
-  KDNALoadPlanGate,
-  KDNAPasswordUnlockDialog,
-})) {
-  if (typeof value !== 'function') {
-    throw new Error(`KDNA Next.js template dependency missing export: ${name}`)
-  }
-}
-
-console.log('KDNA Next.js template smoke passed')
+import assert from 'node:assert/strict'
+import { useKDNARead, KDNAFileInput, KDNAReadStatus, KDNAReadView } from '@aikdna/kdna-react'
+import { selectKDNA, createKDNAWebClient } from '@aikdna/kdna-web-client'
+import { admitNode } from '@aikdna/kdna-core/node'
+for (const api of [useKDNARead,KDNAFileInput,KDNAReadStatus,KDNAReadView,selectKDNA,createKDNAWebClient,admitNode]) assert.equal(typeof api, 'function')
+console.log('Public basic Read imports available')
