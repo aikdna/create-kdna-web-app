@@ -1,0 +1,22 @@
+{
+  "format": "kdna.ci-leg-registry/1",
+  "purpose": "The only authority that may hold the production template leg at not_run. The gate recomputes, from the committed bytes, the unavailability codes the leg can be held at, and may print a not_run receipt only when that recomputed set is exactly the set registered here - compared in both directions. A code the gate computes but this file does not name, or a code named here that is no longer true, makes the leg run instead.",
+  "review_policy": "review_by is an expiry: scripts/verify-ci-leg-receipts.js fails the leg once the date has passed, so a registration cannot outlive its review. Every entry must carry a reason, the recomputed codes it names, a trigger that names what would remove it, an owner and a review_by date.",
+  "entries": [
+    {
+      "leg": "template-productions",
+      "class": "not_run",
+      "reason": "current_contract_reference_asset_unavailable",
+      "object": "the current basic template's Chromium adoption leg driven with an authorized current-contract .kdna asset",
+      "condition": "recomputed_unavailability_codes == unavailable_codes",
+      "unavailable_codes": [
+        "templates_bind_current_component_contract",
+        "current_contract_asset_not_supplied"
+      ],
+      "basis": "The generated current basic template consumes the component-semantics contract, which refuses every pre-component-semantics public reference asset. The published public asset set has been exhausted against the committed Core: every .kdna asset in aikdna/kdna-assets (238 files at the pinned public-assets ref) is rejected, so no published asset can drive this leg today.",
+      "trigger": "an authorized current-contract .kdna asset - bytes the committed component-semantics Core admits, disclosing a judgment id - is published in the public sources and the production-templates job supplies it through KDNA_TEST_CURRENT_ASSET and KDNA_TEST_CURRENT_JUDGMENT_ID (then the gate runs the full production leg, including the current basic template's Chromium adoption check)",
+      "owner": "kdna-open",
+      "review_by": "2027-03-31"
+    }
+  ]
+}

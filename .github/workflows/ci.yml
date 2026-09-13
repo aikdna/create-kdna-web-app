@@ -25,6 +25,12 @@ jobs:
           check-latest: false
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - run: npm run ci:static
+      # The receipt generator is never trusted about its own verdict: this step re-derives
+      # the production leg's unavailability codes from the committed bytes, requires the
+      # receipt, the registration and the recomputation to agree in both directions, and
+      # proves the not_run disappears once its registered codes are gone.
+      - name: Verify the production leg receipt against the committed bytes
+        run: node scripts/verify-ci-leg-receipts.js
 
   production-templates:
     runs-on: ubuntu-latest
@@ -50,6 +56,13 @@ jobs:
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - run: npx playwright install --with-deps chromium
       - name: Exercise packed CLI, production servers, and Chromium
+        # KDNA_TEST_CURRENT_ASSET / KDNA_TEST_CURRENT_JUDGMENT_ID are deliberately absent:
+        # no published public reference asset is admissible by the committed
+        # component-semantics Core, so the current basic template's adoption check is
+        # registered at not_run in fixtures/ci-leg-registry.json, with its reason, trigger
+        # and review_by. npm run ci routes the leg through scripts/ci-leg-receipt.js, which
+        # runs the retained coverage for real and holds only that one adoption check at
+        # not_run while the registration holds.
         env:
           KDNA_TEST_ASSET: public-assets/references/public/laozi-wuwei/laozi-wuwei-0.1.1.kdna
           KDNA_TEST_PROTECTED_ASSET: public-core/fixtures/test_protected_entry.kdna
