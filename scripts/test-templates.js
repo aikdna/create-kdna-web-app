@@ -10,6 +10,7 @@ const { spawn, spawnSync } = require('node:child_process');
 const { once } = require('node:events');
 const { chromium } = require('playwright');
 const { createTempRoot } = require('./tmp-root.cjs');
+const { ADOPTION_SKIPPED_FLAG } = require('./ci-leg-definitions');
 
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const node = process.execPath;
@@ -545,6 +546,12 @@ async function main() {
   const protectedAssetSource = browserChild ? process.argv[6] : process.env.KDNA_TEST_PROTECTED_ASSET;
   const currentAssetSource = browserChild ? process.argv[7] : process.env.KDNA_TEST_CURRENT_ASSET;
   const currentJudgmentId = browserChild ? process.argv[8] : process.env.KDNA_TEST_CURRENT_JUDGMENT_ID;
+  // Only the current basic template (nextjs) consumes the current-contract asset. When
+  // scripts/ci-leg-receipt.js holds that one adoption check at a registered not_run it
+  // invokes this script with ADOPTION_SKIPPED_FLAG, and the other templates' checks must
+  // still run rather than be blocked by an asset this leg no longer claims to have.
+  const adoptionSkipped = process.argv.includes(ADOPTION_SKIPPED_FLAG);
+  const currentAssetRequired = browserChild ? process.argv[3] === 'nextjs' : !adoptionSkipped;
   assert.ok(assetSource, 'KDNA_TEST_ASSET must point to an accepted public .kdna asset');
   const assetPath = path.resolve(assetSource);
   assert.ok(fs.statSync(assetPath).isFile(), 'KDNA_TEST_ASSET must be a file');
@@ -559,17 +566,21 @@ async function main() {
   // The current basic template consumes the component-semantics contract, which
   // rejects every pre-component-semantics public reference asset. Its gate leg
   // therefore needs an explicitly authorized current-contract asset.
-  assert.ok(
-    currentAssetSource,
-    'KDNA_TEST_CURRENT_ASSET must point to an authorized current-contract .kdna asset',
-  );
-  const currentAssetPath = path.resolve(currentAssetSource);
-  assert.ok(fs.statSync(currentAssetPath).isFile(), 'KDNA_TEST_CURRENT_ASSET must be a file');
-  const currentAssetDigest = crypto.createHash('sha256').update(fs.readFileSync(currentAssetPath)).digest('hex');
-  assert.ok(
-    currentJudgmentId,
-    'KDNA_TEST_CURRENT_JUDGMENT_ID must name a judgment id the current-contract asset discloses',
-  );
+  let currentAssetPath = null;
+  let currentAssetDigest = null;
+  if (currentAssetRequired) {
+    assert.ok(
+      currentAssetSource,
+      'KDNA_TEST_CURRENT_ASSET must point to an authorized current-contract .kdna asset',
+    );
+    currentAssetPath = path.resolve(currentAssetSource);
+    assert.ok(fs.statSync(currentAssetPath).isFile(), 'KDNA_TEST_CURRENT_ASSET must be a file');
+    currentAssetDigest = crypto.createHash('sha256').update(fs.readFileSync(currentAssetPath)).digest('hex');
+    assert.ok(
+      currentJudgmentId,
+      'KDNA_TEST_CURRENT_JUDGMENT_ID must name a judgment id the current-contract asset discloses',
+    );
+  }
   if (browserChild) {
     const template = process.argv[3];
     const projectDir = process.argv[4];
@@ -600,8 +611,11 @@ async function main() {
       sha256: crypto.createHash('sha256').update(fs.readFileSync(assetPath)).digest('hex'),
     },
     protected_asset: { file: path.basename(protectedAssetPath), bytes: fs.statSync(protectedAssetPath).size, sha256: protectedDigest },
-    current_asset: { file: path.basename(currentAssetPath), bytes: fs.statSync(currentAssetPath).size, sha256: currentAssetDigest },
-    current_judgment_id: currentJudgmentId,
+    current_asset: currentAssetPath === null
+      ? null
+      : { file: path.basename(currentAssetPath), bytes: fs.statSync(currentAssetPath).size, sha256: currentAssetDigest },
+    current_judgment_id: currentJudgmentId ?? null,
+    current_basic_adoption: adoptionSkipped ? 'registered-not-run' : 'checked',
   }));
   const archive = packCli();
   const projects = [];
@@ -618,17 +632,37 @@ async function main() {
     projects.push([template, projectDir]);
   }
 
+  if (adoptionSkipped) {
+    console.log(
+      `KDNA-CI-COVERAGE: current-basic-adoption=registered-not-run templates=nextjs ` +
+        'retained=packed-cli-generation,install,product-test,build(express,nextjs-pages,nextjs),chromium-adoption(express,nextjs-pages)',
+    );
+  }
   for (const [template, projectDir] of projects) {
+    if (adoptionSkipped && template === 'nextjs') continue;
     run(
       node,
-      [__filename, '--browser-child', template, projectDir, assetPath, protectedAssetPath, currentAssetPath, currentJudgmentId],
+      [
+        __filename,
+        '--browser-child',
+        template,
+        projectDir,
+        assetPath,
+        protectedAssetPath,
+        currentAssetPath ?? '',
+        currentJudgmentId ?? '',
+      ],
       repositoryRoot,
     );
   }
 }
 
 main()
-  .then(() => console.log('All generated templates passed the real production adoption gate.'))
+  .then(() => console.log(
+    process.argv.includes(ADOPTION_SKIPPED_FLAG)
+      ? 'All retained template coverage passed; the current basic template adoption check is registered not_run.'
+      : 'All generated templates passed the real production adoption gate.',
+  ))
   .catch((error) => {
     console.error(error.stack || error.message);
     process.exitCode = 1;
