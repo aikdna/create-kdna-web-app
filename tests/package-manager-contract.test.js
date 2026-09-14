@@ -1,0 +1,42 @@
+'use strict';
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const { spawnSync } = require('node:child_process');
+const { createTempRoot } = require('../scripts/tmp-root.cjs');
+const { verifyGeneratedProject, verifyUnsupportedInstall } = require('../scripts/package-manager-contract.js');
+const root = path.resolve(__dirname, '..');
+const template = path.join(root, 'templates/nextjs');
+for (const manager of ['pnpm', 'yarn']) {
+  test(manager + ' supports generation and explicitly refuses installation', (t) => {
+    const work = createTempRoot('manager-contract-');
+    t.after(() => fs.rmSync(work, { recursive: true, force: true }));
+    const project = path.join(work, 'generated');
+    const cli = [path.join(root, 'bin/create-kdna-web-app.js')];
+    const flags = ['--package-manager', manager];
+    const generated = spawnSync(process.execPath, [...cli, project, ...flags, '--no-install'], { encoding: 'utf8' });
+    assert.equal(generated.status, 0, generated.stderr);
+    verifyGeneratedProject(project, template);
+    const denied = path.join(work, 'denied');
+    const result = spawnSync(process.execPath, [...cli, denied, ...flags], { encoding: 'utf8' });
+    verifyUnsupportedInstall(result, denied);
+    assert.throws(() => verifyUnsupportedInstall({ ...result, status: 0 }, denied), /exit with status 1/u);
+    assert.throws(() => verifyUnsupportedInstall({ ...result, stderr: 'unrelated crash' }, denied), /unsupported-installer/u);
+    assert.throws(() => verifyUnsupportedInstall({ ...result, signal: 'SIGTERM' }, denied), /killed process/u);
+    fs.mkdirSync(denied);
+    assert.throws(() => verifyUnsupportedInstall(result, denied), /before creating/u);
+    const lock = path.join(project, 'host/package-lock.json');
+    const original = fs.readFileSync(lock);
+    fs.unlinkSync(lock);
+    assert.throws(() => verifyGeneratedProject(project, template), /ENOENT/u);
+    fs.writeFileSync(lock, original);
+    const changed = JSON.parse(original);
+    changed.packages[''].name = 'wrong-graph';
+    fs.writeFileSync(lock, JSON.stringify(changed));
+    assert.throws(() => verifyGeneratedProject(project, template), /complete npm graph/u);
+    fs.writeFileSync(lock, original);
+    fs.writeFileSync(path.join(project, 'yarn.lock'), 'unexpected install');
+    assert.throws(() => verifyGeneratedProject(project, template), /must not be created/u);
+  });
+}

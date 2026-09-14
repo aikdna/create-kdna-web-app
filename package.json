@@ -20,7 +20,7 @@
     "ci": "npm run ci:static && npm run ci:receipt && npm pack --dry-run --json",
     "ci:receipt": "node scripts/ci-leg-receipt.js template-productions",
     "ci:static": "npm test && npm run lint && npm run public:check && npm run naming:check && npm run package:check",
-    "test": "node --test tests/scaffold.test.js tests/basic-scaffold.test.js tests/release-context.test.cjs tests/dco.test.cjs",
+    "test": "node --test tests/scaffold.test.js tests/basic-scaffold.test.js tests/release-context.test.cjs tests/dco.test.cjs tests/package-manager-contract.test.js",
     "test:templates": "node scripts/test-templates.js",
     "lint": "node scripts/lint.js",
     "public:check": "node scripts/check-public-surface.js",

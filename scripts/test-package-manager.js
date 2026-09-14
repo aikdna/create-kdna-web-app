@@ -1,102 +1,47 @@
 #!/usr/bin/env node
 'use strict';
-
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
 const { createTempRoot } = require('./tmp-root.cjs');
-
+const { verifyGeneratedProject, verifyUnsupportedInstall } = require('./package-manager-contract.js');
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const root = path.resolve(__dirname, '..');
-const workRoot = createTempRoot('create-kdna-package-manager-');
 const [manager, expectedVersion] = process.argv.slice(2);
-
-function run(command, args, cwd, capture = false) {
-  const result = spawnSync(command, args, {
+const workRoot = createTempRoot('create-kdna-package-manager-');
+function invoke(command, args, cwd) {
+  return spawnSync(command, args, {
     cwd,
-    env: {
-      ...process.env,
-      npm_config_audit: 'false',
-      npm_config_cache: path.join(workRoot, '.npm-cache'),
-      npm_config_fund: 'false',
-      npm_config_update_notifier: 'false',
-    },
-    encoding: 'utf8',
-    stdio: capture ? ['ignore', 'pipe', 'pipe'] : 'inherit',
+    env: { ...process.env, npm_config_audit: 'false', npm_config_cache: path.join(workRoot, '.npm-cache'), npm_config_fund: 'false', npm_config_update_notifier: 'false' },
+    timeout: 120_000, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'],
   });
-  if (result.status !== 0) {
-    throw new Error(`${command} ${args.join(' ')} failed${capture ? `\n${result.stdout}\n${result.stderr}` : ''}`);
-  }
+}
+function run(command, args, cwd) {
+  const result = invoke(command, args, cwd);
+  assert.equal(result.status, 0, command + ' failed: ' + result.stdout + result.stderr);
   return (result.stdout || '').trim();
 }
-
-function packageFromEntry(entryPath, expectedName) {
-  let directory = path.dirname(entryPath);
-  while (directory !== path.dirname(directory)) {
-    const manifestPath = path.join(directory, 'package.json');
-    if (fs.existsSync(manifestPath)) {
-      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-      if (manifest.name === expectedName) return manifest;
-    }
-    directory = path.dirname(directory);
-  }
-  throw new Error(`could not find ${expectedName} from ${entryPath}`);
-}
-
 try {
   assert.ok(['pnpm', 'yarn'].includes(manager), 'package-manager gate only accepts pnpm or yarn');
   assert.match(expectedVersion || '', /^\d+\.\d+\.\d+$/u, 'package-manager version must be exact SemVer');
-  assert.equal(run(manager, ['--version'], root, true), expectedVersion);
-
-  const packReport = JSON.parse(run(
-    npm,
-    ['pack', '--json', '--ignore-scripts', '--pack-destination', workRoot],
-    root,
-    true,
-  ))[0];
-  const archive = path.join(workRoot, packReport.filename);
+  assert.equal(run(manager, ['--version'], root), expectedVersion);
+  const report = JSON.parse(run(npm, ['pack', '--json', '--ignore-scripts', '--pack-destination', workRoot], root))[0];
+  const archive = path.join(workRoot, report.filename);
   assert.ok(fs.statSync(archive).isFile(), 'packed CLI archive must exist');
-
-  const projectDir = path.join(workRoot, `${manager}-nextjs`);
-  run(npm, [
-    'exec', '--yes', '--package', archive, '--',
-    'create-kdna-web-app', projectDir,
-    '--template', 'nextjs',
-    '--package-manager', manager,
-  ], workRoot);
-
-  const expectedLock = manager === 'pnpm' ? 'pnpm-lock.yaml' : 'yarn.lock';
-  assert.ok(fs.statSync(path.join(projectDir, expectedLock)).isFile(), `${manager} lockfile must exist`);
-  assert.ok(!fs.existsSync(path.join(projectDir, 'package-lock.json')), `${manager} must not create an npm lockfile`);
-
-  for (const [name, version] of Object.entries({
-    '@aikdna/kdna-core': '0.21.0',
-    '@aikdna/kdna-react': '0.4.0',
-    '@aikdna/kdna-web-server': '0.3.1',
-  })) {
-    const entry = require.resolve(name, { paths: [projectDir] });
-    const installed = packageFromEntry(entry, name);
-    assert.equal(installed.version, version, `${manager} must install ${name}@${version}`);
-  }
-  const reactEntry = require.resolve('@aikdna/kdna-react', { paths: [projectDir] });
-  const webClientEntry = require.resolve('@aikdna/kdna-web-client', { paths: [path.dirname(reactEntry)] });
-  assert.equal(
-    packageFromEntry(webClientEntry, '@aikdna/kdna-web-client').version,
-    '0.3.0',
-    `${manager} must install the React runtime dependency @aikdna/kdna-web-client@0.3.0`,
-  );
-
-  run(manager, ['run', 'test'], projectDir);
-  run(manager, ['run', 'build'], projectDir);
-  console.log(JSON.stringify({
-    schema: 'kdna.scaffolder-package-manager',
-    schema_version: '0.1.0',
-    manager,
-    manager_version: expectedVersion,
-    template: 'nextjs',
-    status: 'passed',
-  }));
+  const projectDir = path.join(workRoot, manager + '-nextjs');
+  const packedCli = ['exec', '--yes', '--package', archive, '--', 'create-kdna-web-app'];
+  const options = ['--template', 'nextjs', '--package-manager', manager];
+  // Generation retains both npm lockfiles and exact bundled graphs without installing.
+  const output = run(npm, [...packedCli, projectDir, ...options, '--no-install'], workRoot);
+  assert.match(output, /npm run setup/u, 'generation must explain the supported setup command');
+  verifyGeneratedProject(projectDir, path.join(root, 'templates/nextjs'));
+  // A generic failure, successful install, or partially written project cannot pass.
+  const deniedDir = path.join(workRoot, manager + '-unsupported-install');
+  verifyUnsupportedInstall(invoke(npm, [...packedCli, deniedDir, ...options], workRoot), deniedDir);
+  console.log(JSON.stringify({ schema: 'kdna.scaffolder-package-manager', schema_version: '0.1.0', manager,
+    manager_version: expectedVersion, template: 'nextjs', status: 'passed',
+    generation_without_install: 'verified', installation: 'unsupported_refusal_verified', supported_installer: 'npm' }));
 } finally {
   fs.rmSync(workRoot, { recursive: true, force: true });
 }
