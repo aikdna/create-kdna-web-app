@@ -18,7 +18,7 @@
     "@aikdna/kdna-read": "file:vendor/aikdna-kdna-read-0.3.0-rc.component-semantics.2.tgz",
     "@aikdna/kdna-web-client": "file:vendor/aikdna-kdna-web-client-0.5.0-rc.component-semantics.1.tgz",
     "@aikdna/kdna-react": "file:vendor/aikdna-kdna-react-0.6.0-rc.component-semantics.1.tgz",
-    "next": "16.2.12",
+    "next": "16.3.3",
     "react": "19.2.7",
     "react-dom": "19.2.7"
   },
