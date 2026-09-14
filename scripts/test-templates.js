@@ -36,7 +36,7 @@ const currentHostKDNA = Object.freeze({
   '@aikdna/kdna-web-server': 'file:vendor/aikdna-kdna-web-server-0.5.0-rc.component-semantics.1.tgz',
 });
 const currentRegistryPins = Object.freeze({
-  next: '16.2.12',
+  next: '16.3.5',
   react: '19.2.7',
   'react-dom': '19.2.7',
 });
