@@ -72,7 +72,7 @@ graph, and keep both installs separate.
 | host | Read 0.3.0-rc.component-semantics.2 | 43d0f12a1a63a88d26570bfff821919a5cd478fdbd0568bd9c819bc56078b0f0 |
 | host | Host 0.5.0-rc.component-semantics.1 | 4057a84b76d173470c59f95dc0e73af81aa21d36876f6daf4226c1ceaefc7551 |
 
-The app uses Next 16.2.12 and React 19.2.7. All seven KDNA archive placements
+The app uses Next 16.3.5 and React 19.2.7. All seven KDNA archive placements
 are shipped in `vendor/` and `host/vendor/`; registry dependencies remain
 locked. The example environment file describes bounded local policy test
 settings. Do not put credentials or material into public logs or source control.
