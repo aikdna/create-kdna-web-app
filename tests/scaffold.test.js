@@ -247,7 +247,7 @@ test('production template gate has no local package or single-template override'
   assert.match(source, /c4486ceacc08d29af2ecdbe6c02818f78b62722592be687f7f0da23130bbe188/u);
 });
 
-test('CI proves the advertised pnpm and Yarn install paths', () => {
+test('CI retains both pinned package-manager boundary checks', () => {
   const root = path.join(__dirname, '..');
   const workflow = fs.readFileSync(path.join(root, '.github/workflows/ci.yml'), 'utf8');
   const verifier = fs.readFileSync(path.join(root, 'scripts/test-package-manager.js'), 'utf8');
@@ -256,7 +256,8 @@ test('CI proves the advertised pnpm and Yarn install paths', () => {
   assert.match(workflow, /node scripts\/test-package-manager\.js/u);
   assert.match(verifier, /create-kdna-web-app/u);
   assert.match(verifier, /'--package-manager', manager/u);
-  assert.match(verifier, /run\(manager, \['run', 'build'\]/u);
+  assert.match(verifier, /verifyGeneratedProject\(projectDir/u);
+  assert.match(verifier, /verifyUnsupportedInstall\(invoke/u);
 });
 
 test('the source license is byte-identical to the canonical KDNA Apache text', () => {

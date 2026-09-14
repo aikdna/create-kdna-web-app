@@ -54,6 +54,17 @@ explains the npm requirement. `--no-install` remains generation-only. Target
 directories must be empty, have safe package names, and contain no symlink path
 components. Binary archives and exact file modes are preserved.
 
+| Current App Router operation | npm | pnpm 11.14.0 / Yarn 1.22.22 |
+| --- | --- | --- |
+| Generate with `--no-install` | Supported | Supported; output retains npm lockfiles |
+| Generate and install | Supported, including the separate Host | Rejected before creating files |
+| Install an existing generated project | `npm run setup` | Unsupported |
+
+The two package-manager CI checks verify packed-CLI generation and the explicit
+installation refusal, including both npm dependency graphs. Their passing status
+does not mean pnpm or Yarn installation is supported. Generated application build
+and browser behavior are checked separately through the npm template workflow.
+
 ## Current selection and Read boundary
 
 1. Select an explicitly authorized file; selection alone sends no HTTP.

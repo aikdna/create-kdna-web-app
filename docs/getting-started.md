@@ -23,8 +23,11 @@ Use `npm run dev` for development. Both local child processes are owned by the
 launcher. See the generated README for ports, policy limits and exact archives.
 
 The current template does not configure password/activation or migrate old
-assets. A local file alone is not consent to process it. pnpm/Yarn, Pages and
-Express are retained historical surfaces, not upgraded or retested here.
+assets. A local file alone is not consent to process it. Current App Router
+installation supports npm only. pnpm/Yarn may be selected with `--no-install`
+to generate files, but those files still use npm locks; run `npm run setup` to
+install them. Without `--no-install`, either manager is rejected before a project
+directory is created. Pages and Express retain their historical bindings.
 
 ## Historical template example
 
