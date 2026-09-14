@@ -21,9 +21,12 @@ audience is.
 4. Title format: `area: what changed` (e.g. `template/nextjs: update to App Router default`)
 5. Verify before opening:
    - `npm run ci:static` passes
-   - `KDNA_TEST_ASSET=path/to/accepted-asset.kdna npm run test:templates` passes
-   - The generated production project completes inspect -> plan-load -> load
-     in Chromium, not only an import smoke test
+   - `npm run test:templates` passes with the three explicit current and
+     historical asset inputs documented in README
+   - The current App Router project completes explicit selection and Read
+     through its separate Host in Chromium
+   - Historical Pages/Express projects retain their separately bound
+     inspect -> plan-load -> load checks
 
 ## Developer Certificate of Origin (DCO)
 
@@ -32,20 +35,22 @@ Use `git commit -s` to add it automatically. No CLA is required.
 
 ## Template Guidelines
 
-Each template must:
+Each template must preserve its declared dependency and capability boundary:
 
-1. Include only the KDNA packages the template imports at runtime.
-   Next.js templates should include `@aikdna/kdna-web-server` and
-   `@aikdna/kdna-react`; Express templates should include
-   `@aikdna/kdna-web-server`.
-2. Implement the complete inspect → plan-load → load → display flow
-   out of the box.
-3. Include a `README.md` explaining what the template does and how to
-   configure the activation server URL and storage paths.
+1. Include only the KDNA packages its runtime imports. Keep the current App
+   Router application and loopback Host in separate dependency graphs; Host
+   packages do not belong in the browser graph.
+2. The current App Router starter selects locally and sends an explicit Read,
+   then displays the bounded public ViewModel. It has no Plan or load flow.
+3. Include a `README.md` describing the exact setup, proof limits and policy
+   boundary. The current operator policy example is not authentication.
 4. Pass the generated-project checklist in `docs/template-checklist.md`.
 
-Security constraints from `@aikdna/kdna-web-server/CONTRIBUTING.md`
-apply to all templates without exception.
+Historical Pages/Express templates keep their original bindings and documented
+inspect/plan-load/load, activation and storage contract. Do not apply those
+instructions to the current App Router starter. The matching version's Web
+Server security constraints apply to each graph; preserve the separate
+historical checks and support policy.
 
 The browser gate uses Playwright 1.61.1 and Chromium. Install the browser once
 before running the full gate:
